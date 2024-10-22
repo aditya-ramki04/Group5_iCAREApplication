@@ -1,6 +1,6 @@
 ﻿namespace iCareWebApplication.Models
 {
-    public class Documents
+    public class iCareDocument
     {
         public int DocumentId { get; set; }
         public int PatientId { get; set; }

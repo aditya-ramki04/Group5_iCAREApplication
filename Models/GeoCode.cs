@@ -1,6 +1,6 @@
 ﻿namespace iCareWebApplication.Models
 {
-    public class GeoCodes
+    public class GeoCode
     {
         public int GeoCodeId { get; set; }
         public string LocationName { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace iCareWebApplication.Models
 {
-    public class Drugs
+    public class Drug
     {
         public int DrugId { get; set; }
         public string DrugName { get; set; }

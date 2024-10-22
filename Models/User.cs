@@ -2,7 +2,7 @@
 
 namespace iCareWebApplication.Models
 {
-    public class Users
+    public class User
     {
         public int UserId {  get; set; }
         public string UserName { get; set; }
@@ -12,6 +12,6 @@ namespace iCareWebApplication.Models
         public DateTime DateCreate { get; set; }
         public DateTime LastLogin { get; set; }
         public string AccountStatus { get; set; }
-        public Roles Role { get; set; }
+        public Role Role { get; set; }
     }
 }
