@@ -1,0 +1,31 @@
+﻿@model IEnumerable<iCareWebApplication.Models.Role>
+
+@{
+    ViewData["Title"] = "Role List";
+}
+
+<h2>Role List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Role ID</th>
+            <th>Role Name</th>
+            <th>Permissions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var role in Model)
+        {
+            <tr>
+                <td>@role.RoleID</td>
+                <td>@role.RoleName</td>
+                <td>@role.Permissions</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Role</a>
+</p>

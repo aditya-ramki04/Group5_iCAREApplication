@@ -2,7 +2,7 @@
 {
     public class PatientTreatment
     {
-        public int TreatmentId { get; set; }
+        public int PatientTreatmentId { get; set; }
         public int PatientId { get; set; }
         public int WorkerId { get; set; }
         public string Description { get; set; }

@@ -2,7 +2,7 @@
 {
     public class PatientAssignment
     {
-        public int AssignmentId {  get; set; }
+        public int PatientAssignmentId {  get; set; }
         public int PatientId { get; set; }
         public int WorkerId { get; set; }
         public DateTime DateAssigned { get; set; }

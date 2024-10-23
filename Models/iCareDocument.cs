@@ -2,7 +2,7 @@
 {
     public class iCareDocument
     {
-        public int DocumentId { get; set; }
+        public int iCareDocumentId { get; set; }
         public int PatientId { get; set; }
         public string FilePath { get; set; }
         public string FileType { get; set; }
