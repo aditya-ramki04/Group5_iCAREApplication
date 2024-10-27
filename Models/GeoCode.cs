@@ -3,7 +3,7 @@
     public class GeoCode
     {
         public int GeoCodeId { get; set; }
-        public string LocationName { get; set; }
-        public string Description { get; set; }
+        public required string LocationName { get; set; }
+        public required string Description { get; set; }
     }
 }

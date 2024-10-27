@@ -1,5 +1,6 @@
 ﻿using iCareWebApplication.Data;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCareWebApplication.Controllers
 {
@@ -15,7 +16,7 @@ namespace iCareWebApplication.Controllers
 
             public async Task<IActionResult> Index()
             {
-                var roles = await _context.Drug.ToListAsync();
+                var roles = await _context.Drugs.ToListAsync();
                 return View(roles);
             }
     }

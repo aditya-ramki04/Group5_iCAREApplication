@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 
 namespace iCareWebApplication.Controllers
 {
-    public class PatientAssignment : Controller
+    public class UserController : Controller
     {
         private readonly iCareContext _context;
 
-        public PatientAssignment(iCareContext context)
+        public UserController(iCareContext context)
         {
             _context = context;
         }
@@ -18,7 +18,7 @@ namespace iCareWebApplication.Controllers
         // GET: /Role/Index
         public async Task<IActionResult> Index()
         {
-            var roles = await _context.PatientAssignment.ToListAsync();
+            var roles = await _context.User.ToListAsync();
             return View(roles);
         }
     }
