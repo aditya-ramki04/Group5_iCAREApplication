@@ -19,6 +19,7 @@ namespace iCareWebApplication.Data
         public DbSet<iCareDocument> iCareDocuments { get; set; }
         public DbSet<ModificationHistory> ModificationHistories { get; set; }
         public DbSet<Drug> Drugs { get; set; }
+        //public object Drug { get; internal set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
