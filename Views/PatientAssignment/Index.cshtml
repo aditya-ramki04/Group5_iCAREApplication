@@ -1,0 +1,31 @@
+﻿@model IEnumerable<iCareWebApplication.Models.PatientAssignment>
+
+@{
+    ViewData["Title"] = "PatientAssignment List";
+}
+
+<h2>Patient Assignmnet</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>PatientAssignmentID</th>
+            <th>PatientID</th>
+            <th>Active</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in Model)
+        {
+            <tr>
+                <td>@patient.PatientAssignmentId</td>
+                <td>@patient.PatientId</td>
+                <td>@patient.Active</td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<p>
+    <a asp-action="Create" class="btn btn-primary">Add New Role</a>
+</p>
