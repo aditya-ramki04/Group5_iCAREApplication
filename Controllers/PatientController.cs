@@ -18,8 +18,8 @@ namespace iCareWebApplication.Controllers
             // GET: /Role/Index
             public async Task<IActionResult> Index()
             {
-                var roles = await _context.Patient.ToListAsync();
-                return View(roles);
+                var patients = await _context.Patient.ToListAsync();
+                return View(patients);
             }
         }
     }
