@@ -10,6 +10,8 @@
     <thead>
         <tr>
             <th>Drug ID</th>
+            <th>DrugName</th>
+            <th>Description</th>
         </tr>
     </thead>
     <tbody>
@@ -17,11 +19,9 @@
         {
             <tr>
                 <td>@role.DrugId</td>
+                <td>@role.DrugName</td>
+                <td>@role.Description</td>
             </tr>
         }
     </tbody>
 </table>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Drug Information</a>
-</p>
