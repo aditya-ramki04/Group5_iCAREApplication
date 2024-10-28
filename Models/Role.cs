@@ -3,7 +3,7 @@
     public class Role
     {
         public int RoleID {  get; set; }
-        public required string RoleName { get; set; }
-        public required string Permissions { get; set; }
+        public string RoleName { get; set; }
+        public string Permissions { get; set; }
     }
 }

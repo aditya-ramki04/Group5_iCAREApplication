@@ -6,7 +6,7 @@
         public int DocumentId { get; set; }
         public int ModifiedBy { get; set; }
         public DateTime ModificationDate { get; set; }
-        public required string ModificationDetails { get; set; }
+        public string ModificationDetails { get; set; }
 
     }
 }
