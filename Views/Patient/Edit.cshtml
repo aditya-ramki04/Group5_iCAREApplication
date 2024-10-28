@@ -1,0 +1,73 @@
+﻿@model iCareWebApplication.Models.Patient
+
+@{
+    ViewData["Title"] = "Edit Patient";
+}
+
+<h2>Edit Patient</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="PatientId" />
+
+    <div class="form-group">
+        <label asp-for="Name" class="control-label"></label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="DateOfBirth" class="control-label"></label>
+        <input asp-for="DateOfBirth" type="date" class="form-control" />
+        <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Address" class="control-label"></label>
+        <input asp-for="Address" class="form-control" />
+        <span asp-validation-for="Address" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="PhoneNumber" class="control-label"></label>
+        <input asp-for="PhoneNumber" class="form-control" />
+        <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Height" class="control-label"></label>
+        <input asp-for="Height" type="number" class="form-control" />
+        <span asp-validation-for="Height" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="Weight" class="control-label"></label>
+        <input asp-for="Weight" type="number" class="form-control" />
+        <span asp-validation-for="Weight" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BloodGroup" class="control-label"></label>
+        <input asp-for="BloodGroup" class="form-control" />
+        <span asp-validation-for="BloodGroup" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="BedId" class="control-label"></label>
+        <input asp-for="BedId" class="form-control" />
+        <span asp-validation-for="BedId" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TreatmentArea" class="control-label"></label>
+        <input asp-for="TreatmentArea" class="form-control" />
+        <span asp-validation-for="TreatmentArea" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="GeoCodeId" class="control-label"></label>
+        <input asp-for="GeoCodeId" type="number" class="form-control" />
+        <span asp-validation-for="GeoCodeId" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Save Changes</button>
+</form>

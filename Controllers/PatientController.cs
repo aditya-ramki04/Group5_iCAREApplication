@@ -6,21 +6,92 @@ using System.Threading.Tasks;
 
 namespace iCareWebApplication.Controllers
     {
-        public class PatientController : Controller // Ensure this is RoleController and it inherits from Controller
+    public class PatientController : Controller
+    {
+        private readonly iCareContext _context;
+
+        public PatientController(iCareContext context)
         {
-            private readonly iCareContext _context;
+            _context = context;
+        }
 
-            public PatientController(iCareContext context)
+        // GET: /Patient/Index - Fetch all patient records
+        public async Task<IActionResult> Index()
+        {
+            var patients = await _context.Patient.ToListAsync();
+            return View(patients);
+        }
+
+        // GET: /Patient/Create - Display the form to create a new patient
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        // POST: /Patient/Create - Handle form submission to create a new patient record
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(Patient patient)
+        {
+            if (ModelState.IsValid)
             {
-                _context = context;
+                _context.Patient.Add(patient);
+                await _context.SaveChangesAsync();
+                return RedirectToAction(nameof(Index));
+            }
+            return View(patient);
+        }
+
+        // GET: /Patient/Edit/5 - Display the form to edit an existing patient
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
             }
 
-            // GET: /Role/Index
-            public async Task<IActionResult> Index()
+            var patient = await _context.Patient.FindAsync(id);
+            if (patient == null)
             {
-                var patients = await _context.Patient.ToListAsync();
-                return View(patients);
+                return NotFound();
             }
+
+            return View(patient);
+        }
+
+        // POST: /Patient/Edit/5 - Update the patient record in the database
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, Patient patient)
+        {
+            if (id != patient.PatientId)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(patient);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!_context.Patient.Any(e => e.PatientId == id))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+
+                return RedirectToAction(nameof(Index));
+            }
+            return View(patient);
         }
     }
+}
 

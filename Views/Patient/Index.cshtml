@@ -4,19 +4,42 @@
     ViewData["Title"] = "Patient List";
 }
 
-<h2>Role List</h2>
+<h2>Patient List</h2>
 
 <table class="table">
     <thead>
         <tr>
             <th>Patient ID</th>
+            <th>Name</th>
+            <th>Date of Birth</th>
+            <th>Address</th>
+            <th>Phone Number</th>
+            <th>Height</th>
+            <th>Weight</th>
+            <th>Blood Group</th>
+            <th>Bed ID</th>
+            <th>Treatment Area</th>
+            <th>GeoCode ID</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var role in Model)
+        @foreach (var patient in Model)
         {
             <tr>
-                <td>@role.PatientId</td>
+                <td>@patient.PatientId</td>
+                <td>@patient.Name</td>
+                <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>
+                <td>@patient.Address</td>
+                <td>@patient.PhoneNumber</td>
+                <td>@patient.Height</td>
+                <td>@patient.Weight</td>
+                <td>@patient.BloodGroup</td>
+                <td>@patient.BedId</td>
+                <td>@patient.TreatmentArea</td>
+                <td>@patient.GeoCodeId</td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn btn-sm btn-primary">Edit</a>
+                </td>
             </tr>
         }
     </tbody>
@@ -25,3 +48,4 @@
 <p>
     <a asp-action="Create" class="btn btn-primary">Add New Patient</a>
 </p>
+
