@@ -16,8 +16,8 @@ namespace iCareWebApplication.Controllers
 
             public async Task<IActionResult> Index()
             {
-                var roles = await _context.Drugs.ToListAsync();
-                return View(roles);
+                var drugs = await _context.Drugs.ToListAsync();
+                return View(drugs);
             }
     }
 }
