@@ -1,4 +1,6 @@
-﻿namespace iCareWebApplication.Models
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace iCareWebApplication.Models
 {
     public class Patient
     {
@@ -12,6 +14,8 @@
         public string BloodGroup { get; set; }
         public string BedId { get; set; }
         public string TreatmentArea { get; set; }
+
+        [Range(1, 50, ErrorMessage = "GeoCodeId must be between 1 and 50.")]
         public int GeoCodeId { get; set; }
 
 

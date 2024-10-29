@@ -7,6 +7,10 @@
 <h2>Create Patient</h2>
 
 <form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
+
+<form asp-action="Create" method="post">
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />

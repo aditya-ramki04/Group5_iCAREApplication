@@ -6,6 +6,19 @@
 
 <h2>Patient List</h2>
 
+<form asp-action="FilterByLocation" method="get">
+    <label for="geoCodeId">Filter by GeoCode:</label>
+    <select id="geoCodeId" name="geoCodeId" class="form-select" onchange="this.form.submit()">
+        <option value="">All</option>
+        @for (int i = 1; i <= 50; i++)
+        {
+            <option value="@i">GeoCode @i</option>
+        }
+    </select>
+</form>
+
+
+
 <table class="table">
     <thead>
         <tr>

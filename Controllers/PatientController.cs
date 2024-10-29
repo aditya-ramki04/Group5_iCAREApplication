@@ -25,7 +25,8 @@ namespace iCareWebApplication.Controllers
         // GET: /Patient/Create - Display the form to create a new patient
         public IActionResult Create()
         {
-            return View();
+            ViewData["Title"] = "Create Patient"; // Ensure this line is included
+            return View(new Patient());
         }
 
         // POST: /Patient/Create - Handle form submission to create a new patient record
@@ -39,6 +40,7 @@ namespace iCareWebApplication.Controllers
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
+            ViewData["Title"] = "Create Patient";
             return View(patient);
         }
 
@@ -92,6 +94,17 @@ namespace iCareWebApplication.Controllers
             }
             return View(patient);
         }
+
+
+        public async Task<IActionResult> FilterByLocation(int? geoCodeId)
+        {
+            var patients = geoCodeId.HasValue
+                           ? await _context.Patient.Where(p => p.GeoCodeId == geoCodeId).ToListAsync()
+                           : await _context.Patient.ToListAsync();
+
+            return View("Index", patients); // Reuse the Index view to display patients
+        }
+
     }
 }
 

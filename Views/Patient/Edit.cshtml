@@ -6,6 +6,10 @@
 
 <h2>Edit Patient</h2>
 
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="text-danger"></div>
+</form>
+
 <form asp-action="Edit" method="post">
     <input type="hidden" asp-for="PatientId" />
 
