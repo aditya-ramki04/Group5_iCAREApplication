@@ -1,9 +1,51 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-     <!--  <button> Click here!</button> -->
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iCareWebApplication</title>
+    <link rel="stylesheet" href="~/css/home.css" />
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="container">
+            <h1>Welcome to iCare</h1>
+            <p>Your health is our priority. Explore our personalized healthcare services.</p>
+            <a href="#" class="btn-primary">Get Started</a>
+        </div>
+    </div>
+
+    <div class="services-section">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="service-list">
+                <div class="service-item">
+                    <h3>General Consultation</h3>
+                    <p>Our experts are here to provide you with the best medical advice.</p>
+                </div>
+                <div class="service-item">
+                    <h3>Specialized Care</h3>
+                    <p>We offer specialized medical care tailored to your needs.</p>
+                </div>
+                <div class="service-item">
+                    <h3>Emergency Services</h3>
+                    <p>Our emergency department is available 24/7 for urgent cases.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-section">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Have questions? Reach out to us at info@icare.com or call us at (123) 456-7890.</p>
+        </div>
+    </div>
+
+</body>
+</html>
