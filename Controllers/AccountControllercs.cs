@@ -70,3 +70,29 @@
 //    }
 
 //}
+
+using Microsoft.AspNetCore.Mvc;
+
+namespace iCareWebApplication.Controllers
+{
+    public class AccountController : Controller
+    {
+        // GET: /Account/LoginOrRegister
+        [HttpGet]
+        public IActionResult LoginOrRegister()
+        {
+            return View("LoginOrRegister"); // Automatically looks in Views/Account/LoginOrRegister.cshtml
+        }
+
+        public IActionResult Login()
+        {
+            return View("Login"); // Automatically looks in Views/Account/Login.cshtml
+        }
+
+        public IActionResult Register()
+        {
+            return View("Register"); // Automatically looks in Views/Account/Register.cshtml
+        }
+
+    }
+}
