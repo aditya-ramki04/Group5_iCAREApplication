@@ -1,9 +1,81 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-     <!--  <button> Click here!</button> -->
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - iCareWebApplication</title>
+    <link rel="stylesheet" href="~/css/home.css" />
+</head>
+<body>
+
+    <div class="hero-section">
+        <div class="container">
+            <h1>Welcome to iCare</h1>
+            <p>Your health is our priority. Explore our personalized healthcare services.</p>
+            <a href="/Account/Login" class="btn-primary">Get Started</a>
+        </div>
+    </div>
+
+    <div class="services-section">
+        <div class="container">
+            <h2>Our Services</h2>
+            <div class="service-list">
+                <div class="service-item">
+                    <h3>General Consultation</h3>
+                    <p>Our experts are here to provide you with the best medical advice.</p>
+                </div>
+                <div class="service-item">
+                    <h3>Specialized Care</h3>
+                    <p>We offer specialized medical care tailored to your needs.</p>
+                </div>
+                <div class="service-item">
+                    <h3>Emergency Services</h3>
+                    <p>Our emergency department is available 24/7 for urgent cases.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="contact-section">
+        <div class="container">
+            <h2>Contact Us</h2>
+            <p>Have questions? Reach out to our specialists for expert advice or care. Availability Monday - Friday:</p>
+
+            <div class="doctor-list">
+                <div class="doctor-item">
+                    <h3>Dr. Nitin Chava</h3>
+                    <p>Specialist: Cardiology</p>
+                    <p>Availability: 9:00 AM - 1:00 PM</p>
+                    <p>Email: nmc5w7@umsystem.edu</p>
+                </div>
+                <div class="doctor-item">
+                    <h3>Dr.Matt Robison</h3>
+                    <p>Specialist: Pediatrics</p>
+                    <p>Availability: 10:00 AM - 4:00 PM</p>
+                    <p>Email: mr6vm@umsystem.edu</p>
+                </div>
+                <div class="doctor-item">
+                    <h3>Dr. Aditya Ramakrishnan</h3>
+                    <p>Specialist: Orthopedics</p>
+                    <p>Availability: 12:00 PM - 6:00 PM</p>
+                    <p>Email: ar4bw@umsystem.edu</p>
+                </div>
+                <div class="doctor-item">
+                    <h3>Dr. Abhi Pasupuleti</h3>
+                    <p>Specialist: Dermatology</p>
+                    <p>Availability: 8:00 AM - 2:00 PM</p>
+                    <p>Email: ap587@umsystem.edu</p>
+                </div>
+            </div>
+
+            <p>For general inquiries, contact us at info@icare.com or call us at (123) 456-7890.</p>
+        </div>
+    </div>
+
+
+</body>
+</html>
