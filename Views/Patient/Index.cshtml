@@ -7,15 +7,26 @@
 <h2>Patient List</h2>
 
 <form asp-action="FilterByLocation" method="get">
-    <label for="geoCodeId">Filter by GeoCode:</label>
+    <label for="geoCodeId">Filter by State:</label>
     <select id="geoCodeId" name="geoCodeId" class="form-select" onchange="this.form.submit()">
         <option value="">All</option>
-        @for (int i = 1; i <= 50; i++)
+        @{
+            string[] states = new string[] {
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", "New Jersey",
+        "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", "Oregon", "Pennsylvania", "Rhode Island",
+        "South Carolina", "South Dakota", "Tennessee", "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia",
+        "Wisconsin", "Wyoming"
+        };
+        }
+        @for (int i = 0; i < states.Length; i++)
         {
-            <option value="@i">GeoCode @i</option>
+            <option value="@(i + 1)">@states[i] - @(i + 1)</option>
         }
     </select>
 </form>
+
 
 
 
