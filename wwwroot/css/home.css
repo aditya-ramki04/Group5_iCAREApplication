@@ -7,7 +7,7 @@
 }
 
 .hero-section {
-    background: url('~/images/icare-desk.png') no-repeat center center;
+    background: url('/images/icare-desk.png') no-repeat center center; 
     background-size: cover;
     color: white;
     padding: 80px 0;
@@ -41,7 +41,7 @@
 }
 
 .service-item {
-    background-color: #f8f9fa;
+    background-color: #7ea3b5;
     padding: 15px;
     border-radius: 10px;
     max-width: 30%;
