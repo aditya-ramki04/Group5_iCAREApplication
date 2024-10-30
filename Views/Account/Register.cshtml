@@ -6,6 +6,16 @@
 
 <form method="post" asp-action="Register" asp-controller="Account">
     <div class="form-group">
+        <label for="fullName">Full Name</label>
+        <input type="text" id="fullName" name="FullName" class="form-control" required />
+    </div>
+
+    <div class="form-group">
+        <label for="email">Email</label>
+        <input type="email" id="email" name="Email" class="form-control" required />
+    </div>
+
+    <div class="form-group">
         <label for="username">Username</label>
         <input type="text" id="username" name="Username" class="form-control" required />
     </div>
@@ -22,6 +32,7 @@
             <option value="Doctor">Doctor</option>
             <option value="Physician">Physician</option>
             <option value="Nurse">Nurse</option>
+            <option value="Lab Technician">Lab Technician</option>
             <option value="Receptionist">Receptionist</option>
         </select>
     </div>

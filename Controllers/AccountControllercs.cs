@@ -123,13 +123,45 @@ namespace iCareWebApplication.Controllers
 
         // POST: /Account/Register
         [HttpPost]
-        public async Task<IActionResult> Register(string username, string password, string employeeType)
+        public async Task<IActionResult> Register(string fullName, string email, string username, string password, string employeeType)
         {
-            // Logic to add a new user to the database
-            // This part requires a hashed password and other details
+            // Map EmployeeType to RoleID
+            int roleId = employeeType switch
+            {
+                "Physician" => 2,
+                "Nurse" => 3,
+                "Receptionist" => 4,
+                "Lab Technician" => 5,
+                "Doctor" => 6,
+                _ => 0 // Default to 0 if no match
+            };
+
+            if (roleId == 0)
+            {
+                ModelState.AddModelError("", "Invalid Employee Type.");
+                return View("Register");
+            }
+
+            // Create a new User object with the provided data
+            var newUser = new User
+            {
+                FullName = fullName,
+                Email = email,
+                UserName = username,
+                PasswordHash = password, // Apply hashing for production
+                RoleID = roleId,
+                DateCreate = DateTime.Now,
+                AccountStatus = "Active"
+            };
+
+            // Add the user to the database
+            _context.User.Add(newUser);
+            await _context.SaveChangesAsync();
+
+            // Redirect to Login page upon successful registration
             return RedirectToAction("Login");
         }
     }
-}
+}   
 
 

@@ -10,8 +10,7 @@ namespace iCareWebApplication.Models
         public string FullName { get; set; }
         public string Email { get; set; }
         public DateTime DateCreate { get; set; }
-        public DateTime LastLogin { get; set; }
         public string AccountStatus { get; set; }
-        public Role Role { get; set; }
+        public int RoleID { get; set; }
     }
 }
