@@ -72,27 +72,64 @@
 //}
 
 using Microsoft.AspNetCore.Mvc;
+using iCareWebApplication.Data; // Ensure this matches the namespace in iCareContext
+using iCareWebApplication.Models; // Ensure this matches the namespace for User model
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace iCareWebApplication.Controllers
 {
     public class AccountController : Controller
     {
-        // GET: /Account/LoginOrRegister
-        [HttpGet]
-        public IActionResult LoginOrRegister()
+        private readonly iCareContext _context;
+
+        public AccountController(iCareContext context)
         {
-            return View("LoginOrRegister"); // Automatically looks in Views/Account/LoginOrRegister.cshtml
+            _context = context;
         }
 
+        // GET: /Account/Login
+        [HttpGet]
         public IActionResult Login()
         {
-            return View("Login"); // Automatically looks in Views/Account/Login.cshtml
+            return View("Login");
         }
 
+        // POST: /Account/Login
+        [HttpPost]
+        public async Task<IActionResult> Login(string username, string password)
+        {
+            // Query database for user
+            var user = _context.User.FirstOrDefault(u => u.UserName == username);
+
+            // Validate password (use hashing for production)
+            if (user != null && user.PasswordHash == password) // Replace with hash verification in real applications
+            {
+                // Redirect to Home page if login is successful
+                return RedirectToAction("Index", "Home");
+            }
+
+            // Display error message if login fails
+            ViewData["Error"] = "Invalid username or password.";
+            return View("Login");
+        }
+
+        // GET: /Account/Register
+        [HttpGet]
         public IActionResult Register()
         {
-            return View("Register"); // Automatically looks in Views/Account/Register.cshtml
+            return View("Register");
         }
 
+        // POST: /Account/Register
+        [HttpPost]
+        public async Task<IActionResult> Register(string username, string password, string employeeType)
+        {
+            // Logic to add a new user to the database
+            // This part requires a hashed password and other details
+            return RedirectToAction("Login");
+        }
     }
 }
+
+
