@@ -14,6 +14,14 @@ builder.Services.AddDbContext<iCareContext>(options =>
     new MySqlServerVersion(new Version(8, 0, 21)) // Specify your MySQL version
 ));
 
+// Add session services
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30); // Set session timeout
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
 // Build the app
 var app = builder.Build();
 
@@ -28,6 +36,8 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 
 app.UseRouting();
+
+app.UseSession();
 
 app.UseAuthorization();
 

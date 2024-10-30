@@ -25,6 +25,15 @@ namespace iCareWebApplication.Data
         {
             base.OnModelCreating(modelBuilder);
             // Optional: Configure entity relationships here
+            modelBuilder.Entity<PatientAssignment>()
+                .HasOne<User>() // Assuming User is the worker
+                .WithMany() // Many assignments can be associated with a single user
+                .HasForeignKey(pa => pa.WorkerId);
+
+            modelBuilder.Entity<PatientAssignment>()
+                .HasOne<Patient>()
+                .WithMany()
+                .HasForeignKey(pa => pa.PatientId);
         }
     }
 }

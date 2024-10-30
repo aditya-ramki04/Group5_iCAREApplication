@@ -76,6 +76,7 @@ using iCareWebApplication.Data; // Ensure this matches the namespace in iCareCon
 using iCareWebApplication.Models; // Ensure this matches the namespace for User model
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace iCareWebApplication.Controllers
 {
@@ -103,9 +104,18 @@ namespace iCareWebApplication.Controllers
             var user = _context.User.FirstOrDefault(u => u.UserName == username);
 
             // Validate password (use hashing for production)
-            if (user != null && user.PasswordHash == password) // Replace with hash verification in real applications
+            if (user != null && user.PasswordHash == password) 
             {
                 // Redirect to Home page if login is successful
+                var roleName = _context.Roles
+                .Where(r => r.RoleID == user.RoleID)
+                .Select(r => r.RoleName)
+                .FirstOrDefault();
+
+                HttpContext.Session.SetInt32("UserId", user.UserId);
+                HttpContext.Session.SetString("Username", user.UserName);
+                HttpContext.Session.SetString("Role", roleName);
+
                 return RedirectToAction("Index", "Home");
             }
 

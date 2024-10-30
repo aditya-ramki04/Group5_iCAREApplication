@@ -1,0 +1,30 @@
+﻿@model IEnumerable<iCareWebApplication.Models.Patient>
+
+@{
+    ViewData["Title"] = "My Board";
+}
+
+<h2>My Board</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Patient ID</th>
+            <th>Name</th>
+            <th>Date of Birth</th>
+
+            <!-- Add more columns as needed -->
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var patient in Model)
+        {
+            <tr>
+                <td>@patient.PatientId</td>
+                <td>@patient.Name</td>
+                <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>
+
+            </tr>
+        }
+    </tbody>
+</table>
