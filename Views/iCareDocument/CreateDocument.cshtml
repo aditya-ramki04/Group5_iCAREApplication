@@ -1,8 +1,8 @@
-﻿ @model iCareWebApplication.Models.iCareDocument
+﻿@model iCareWebApplication.Models.iCareDocument
 
 <h2>Create New Document</h2>
 
-<form asp-action="CreateDocument" method="post">
+<form asp-action="RegisterDocument" method="post">
     <div class="form-group">
         <label for="PatientId">Select Patient</label>
         <select asp-for="PatientId" asp-items="ViewBag.Patients" class="form-control" required>
@@ -10,12 +10,33 @@
         </select>
     </div>
     <div class="form-group">
-        <label for="iCareDocumentId">Document ID</label>
-        <input asp-for="iCareDocumentId" type="number" class="form-control" required />
+        <label for="FilePath">File Path</label>
+        <input asp-for="FilePath" type="text" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="FileType">File Type</label>
+        <input asp-for="FileType" type="text" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="CreatedBy">Created By</label>
+        <input asp-for="CreatedBy" type="number" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="CreationDate">Creation Date</label>
+        <input asp-for="CreationDate" type="datetime-local" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="LastModified">Last Modified Date</label>
+        <input asp-for="LastModified" type="datetime-local" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="ModifiedBy">Modified By</label>
+        <input asp-for="ModifiedBy" type="number" class="form-control" required />
     </div>
     <div class="form-group">
         <label for="Description">Description</label>
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
     </div>
-    <button type="submit" class="btn btn-primary">Create PDF</button>
+
+    <button type="submit" class="btn btn-primary">Create Document</button>
 </form>
