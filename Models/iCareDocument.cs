@@ -11,5 +11,7 @@
         public DateTime LastModified { get; set; }
         public int ModifiedBy { get; set; }
 
+        public string Description { get; set; }
+
     }
 }

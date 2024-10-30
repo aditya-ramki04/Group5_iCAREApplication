@@ -44,6 +44,7 @@
             <th>Bed ID</th>
             <th>Treatment Area</th>
             <th>GeoCode ID</th>
+            <th>Documents</th>
         </tr>
     </thead>
     <tbody>
@@ -61,6 +62,7 @@
                 <td>@patient.BedId</td>
                 <td>@patient.TreatmentArea</td>
                 <td>@patient.GeoCodeId</td>
+                <td>@patient.DocumentCount</td>
                 <td>
                     <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn btn-sm btn-primary">Edit</a>
                 </td>

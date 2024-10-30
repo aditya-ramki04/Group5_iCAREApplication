@@ -1,0 +1,41 @@
+﻿@model IEnumerable<iCareWebApplication.Models.iCareDocument>
+
+@{
+    ViewData["Title"] = "Documents List";
+}
+
+<h2>Documents List</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>Document ID</th>
+            <th>Patient ID</th>
+            <th>Description</th>
+            <th>File Path</th>
+            <th>Created By</th>
+            <th>Creation Date</th>
+            <th>Last Modified</th>
+            <th>Modified By</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var doc in Model)
+        {
+            <tr>
+                <td>@doc.iCareDocumentId</td>
+                <td>@doc.PatientId</td>
+                <td>@doc.FileType</td>
+                <td>@doc.FilePath</td>
+                <td>@doc.CreatedBy</td>
+                <td>@doc.CreationDate</td>
+                <td>@doc.LastModified</td>
+                <td>@doc.ModifiedBy</td>
+                <td>
+                    <a asp-action="Download" asp-route-id="@doc.iCareDocumentId" class="btn btn-info">Download</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

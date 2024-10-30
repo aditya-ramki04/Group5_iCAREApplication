@@ -18,6 +18,8 @@ namespace iCareWebApplication.Models
         [Range(1, 50, ErrorMessage = "GeoCodeId must be between 1 and 50.")]
         public int GeoCodeId { get; set; }
 
+        public int DocumentCount { get; set; }
+
 
     }
 }
