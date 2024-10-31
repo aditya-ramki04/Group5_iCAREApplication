@@ -6,7 +6,25 @@
 
 <h2>Documents List</h2>
 
-<table class="table">
+<!-- Dropdown for selecting a document to download -->
+<div class="form-group">
+    <label for="documentSelect">Select a document to download:</label>
+    <select id="documentSelect" class="form-control">
+        <option value="" selected disabled>Select a document...</option>
+        @foreach (var doc in Model)
+        {
+            <option value="@doc.iCareDocumentId">@doc.Description (ID: @doc.iCareDocumentId)</option>
+        }
+    </select>
+</div>
+
+<button id="downloadButton" class="btn btn-primary mt-2">Download Selected Document</button>
+
+<!-- Placeholder for selected file name or success message -->
+<div id="downloadMessage" class="mt-3"></div>
+
+<!-- Documents Table -->
+<table class="table mt-4">
     <thead>
         <tr>
             <th>Document ID</th>
@@ -17,7 +35,6 @@
             <th>Creation Date</th>
             <th>Last Modified</th>
             <th>Modified By</th>
-            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -26,16 +43,38 @@
             <tr>
                 <td>@doc.iCareDocumentId</td>
                 <td>@doc.PatientId</td>
-                <td>@doc.FileType</td>
+                <td>@doc.Description</td>
                 <td>@doc.FilePath</td>
                 <td>@doc.CreatedBy</td>
                 <td>@doc.CreationDate</td>
                 <td>@doc.LastModified</td>
                 <td>@doc.ModifiedBy</td>
-                <td>
-                    <a asp-action="Download" asp-route-id="@doc.iCareDocumentId" class="btn btn-info">Download</a>
-                </td>
             </tr>
         }
     </tbody>
 </table>
+
+@section Scripts {
+    <script>
+        document.getElementById("downloadButton").addEventListener("click", function () {
+            const selectedId = document.getElementById("documentSelect").value;
+            const downloadMessage = document.getElementById("downloadMessage");
+
+            if (selectedId) {
+                // Create a temporary download link
+                const link = document.createElement("a");
+                link.href = '@Url.Action("Download", "iCareDocument")?id=' + selectedId;
+                link.download = ""; // Ensures the browser treats it as a download
+
+                // Trigger the download
+                link.click();
+
+                // Display the success message
+                const selectedOption = document.getElementById("documentSelect").selectedOptions[0];
+                downloadMessage.innerHTML = `<strong>Downloading:</strong> ${selectedOption.textContent}`;
+            } else {
+                alert("Please select a document to download.");
+            }
+        });
+    </script>
+}
