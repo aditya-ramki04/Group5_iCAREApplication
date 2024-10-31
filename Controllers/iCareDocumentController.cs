@@ -217,77 +217,6 @@ namespace iCareWebApplication.Controllers
             return View();
         }
 
-        //// POST: iCareDocument/CreateDocument
-        //[HttpPost]
-        //public async Task<IActionResult> CreateDocument(iCareDocument model)
-        //{
-        //    if (ModelState.IsValid)
-        //    {
-        //        // Fetch the patient information using the provided PatientId
-        //        var patient = await _context.Patient.FindAsync(model.PatientId);
-        //        if (patient == null)
-        //        {
-        //            ModelState.AddModelError("", "Patient not found.");
-        //            ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name");
-        //            return View(model);
-        //        }
-
-        //        // Ensure the documents directory exists
-        //        var documentsDirectory = Path.Combine("wwwroot", "documents");
-        //        if (!Directory.Exists(documentsDirectory))
-        //        {
-        //            Directory.CreateDirectory(documentsDirectory);
-        //        }
-
-        //        // Generate a unique file name for the PDF
-        //        var pdfFileName = $"{Guid.NewGuid()}.pdf";
-        //        var pdfFilePath = Path.Combine(documentsDirectory, pdfFileName);
-
-        //        // Create the PDF file
-        //        using (var fs = new FileStream(pdfFilePath, FileMode.Create, FileAccess.Write, FileShare.None))
-        //        {
-        //            Document document = new Document();
-        //            PdfWriter.GetInstance(document, fs);
-        //            document.Open();
-
-        //            // Add patient information and document metadata to the PDF
-        //            document.Add(new Paragraph($"Document ID: {model.iCareDocumentId}"));
-        //            document.Add(new Paragraph($"Patient ID: {patient.PatientId}"));
-        //            document.Add(new Paragraph($"Patient Name: {patient.Name}"));
-        //            document.Add(new Paragraph($"Description: {model.Description}"));
-        //            document.Add(new Paragraph($"Date of Creation: {DateTime.Now}"));
-
-        //            document.Close();
-        //        }
-
-        //        // Save the document metadata to the database
-        //        model.FilePath = Path.Combine("documents", pdfFileName); // Store the relative path
-        //        model.FileType = "PDF";
-        //        model.CreationDate = DateTime.Now;
-        //        model.LastModified = DateTime.Now;
-
-        //        _context.iCareDocuments.Add(model);
-        //        await _context.SaveChangesAsync();
-
-        //        return RedirectToAction("Index");
-        //    }
-
-        //    ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name");
-        //    return View(model);
-        //}
-
-        //// GET: iCareDocument/Download
-        //public async Task<IActionResult> Download(int id)
-        //{
-        //    var document = await _context.iCareDocuments.FindAsync(id);
-        //    if (document == null || string.IsNullOrEmpty(document.FilePath))
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var filePath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot", document.FilePath.TrimStart('/'));
-        //    return PhysicalFile(filePath, "application/pdf", Path.GetFileName(filePath));
-        //}
         [HttpPost]
         public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description)
         {
@@ -315,9 +244,47 @@ namespace iCareWebApplication.Controllers
             _context.iCareDocuments.Add(newDocument);
             await _context.SaveChangesAsync();
 
+            // Generate PDF
+            try
+            {
+                string pdfFilePath = Path.Combine("wwwroot", "documents", $"{newDocument.iCareDocumentId}.pdf");
+                using (var stream = new FileStream(pdfFilePath, FileMode.Create))
+                {
+                    Document pdfDoc = new Document(PageSize.A4);
+                    PdfWriter.GetInstance(pdfDoc, stream);
+                    pdfDoc.Open();
+
+                    // Add content to the PDF
+                    pdfDoc.Add(new Paragraph("iCare Document"));
+                    pdfDoc.Add(new Paragraph($"Patient ID: {newDocument.PatientId}"));
+                    pdfDoc.Add(new Paragraph($"File Path: {newDocument.FilePath}"));
+                    pdfDoc.Add(new Paragraph($"File Type: {newDocument.FileType}"));
+                    pdfDoc.Add(new Paragraph($"Created By: {newDocument.CreatedBy}"));
+                    pdfDoc.Add(new Paragraph($"Creation Date: {newDocument.CreationDate}"));
+                    pdfDoc.Add(new Paragraph($"Last Modified: {newDocument.LastModified}"));
+                    pdfDoc.Add(new Paragraph($"Modified By: {newDocument.ModifiedBy}"));
+                    pdfDoc.Add(new Paragraph($"Description: {newDocument.Description}"));
+
+                    pdfDoc.Close();
+                }
+
+                // Update the document's FilePath with the new PDF path if needed
+                newDocument.FilePath = pdfFilePath;
+                _context.Update(newDocument);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                // Log error or handle exceptions
+                ModelState.AddModelError("", "Error generating PDF: " + ex.Message);
+                return View("RegisterDocument");
+            }
+
             // Redirect to a confirmation or list page upon successful registration
-            return RedirectToAction("Home");
+            return RedirectToAction("Index");
         }
+
+
 
     }
 }
