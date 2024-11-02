@@ -53,12 +53,22 @@ namespace iCareWebApplication.Controllers
                 CreatedBy = createdBy,
                 Description = description,
                 CreationDate = DateTime.Now,
-                LastModified = DateTime.Now, 
-                ModifiedBy = createdBy 
+                LastModified = DateTime.Now,
+                ModifiedBy = createdBy
             };
 
+            // Add the document to the iCareDocuments table
             _context.iCareDocuments.Add(newDocument);
             await _context.SaveChangesAsync();
+
+            // Increment DocumentCount for the patient
+            var patient = await _context.Patient.FindAsync(patientId);
+            if (patient != null)
+            {
+                patient.DocumentCount += 1;
+                _context.Update(patient);
+                await _context.SaveChangesAsync();
+            }
 
             try
             {
@@ -92,25 +102,12 @@ namespace iCareWebApplication.Controllers
                 ModelState.AddModelError("", "Error generating PDF: " + ex.Message);
                 return View("RegisterDocument");
             }
+
             return RedirectToAction("Index");
         }
-        public IActionResult Download(int id)
-        {
-            // Locate the PDF file
-            string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{id}.pdf");
-
-            if (System.IO.File.Exists(filePath))
-            {
-                return PhysicalFile(filePath, "application/pdf", $"{id}.pdf");
-            }
-            else
-            {
-                // Handle file not found case
-                return NotFound("File not found.");
-            }
-        }
-
-
-
+    
     }
+
+
+
 }
