@@ -49,9 +49,13 @@
                 <td>@doc.CreationDate</td>
                 <td>@doc.LastModified</td>
                 <td>@doc.ModifiedBy</td>
+                <td>
+                    <a asp-action="EditDocument" asp-route-id="@doc.iCareDocumentId" class="btn btn-warning">Edit</a>
+                </td>
             </tr>
         }
     </tbody>
+
 </table>
 
 @section Scripts {

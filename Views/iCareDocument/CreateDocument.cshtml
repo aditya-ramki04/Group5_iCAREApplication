@@ -37,5 +37,15 @@
         <label for="Description">Description</label>
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
     </div>
+    <div class="form-group">
+        <label for="drugSelect">Select a drug:</label>
+        <select id="drugSelect" name="DrugId" class="form-control">
+            <option value="" selected disabled>Select a drug...</option>
+            @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
+            {
+                <option value="@drug.DrugId">@drug.DrugName</option>
+            }
+        </select>
+    </div>
     <button type="submit" class="btn btn-primary">Create Document</button>
 </form>
