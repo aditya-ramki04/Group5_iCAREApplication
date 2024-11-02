@@ -61,13 +61,16 @@
             const downloadMessage = document.getElementById("downloadMessage");
 
             if (selectedId) {
-                // Create a temporary download link
+                // Create a temporary link to trigger the download
                 const link = document.createElement("a");
-                link.href = '@Url.Action("Download", "iCareDocument")?id=' + selectedId;
-                link.download = ""; // Ensures the browser treats it as a download
+                link.href = '/iCareDocument/Download?id=' + encodeURIComponent(selectedId);
+                link.target = "_blank"; // Open in a new tab or window
+                link.download = `${selectedId}.pdf`; // Suggested filename for the download
 
-                // Trigger the download
+                // Append to the document to trigger the download
+                document.body.appendChild(link);
                 link.click();
+                document.body.removeChild(link); // Clean up after click
 
                 // Display the success message
                 const selectedOption = document.getElementById("documentSelect").selectedOptions[0];
