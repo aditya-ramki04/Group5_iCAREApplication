@@ -122,8 +122,6 @@ namespace iCareWebApplication.Controllers
             return View(assignablePatients);
         }
 
-
-
     }
 }
 

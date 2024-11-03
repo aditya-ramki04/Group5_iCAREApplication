@@ -66,6 +66,9 @@
                 <td>
                     <a asp-action="Edit" asp-route-id="@patient.PatientId" class="btn btn-sm btn-primary">Edit</a>
                 </td>
+                <td>
+                    <a asp-controller="PatientTreatment" asp-action="Index" asp-route-patientId="@patient.PatientId" class="btn btn-info">View Treatments</a>
+                </td>
             </tr>
         }
     </tbody>

@@ -15,7 +15,7 @@ namespace iCareWebApplication.Data
         public DbSet<Role> Roles { get; set; }
         public DbSet<Patient> Patient { get; set; }
         public DbSet<PatientAssignment> PatientAssignment { get; set; }
-        public DbSet<PatientTreatment> PatientTreatments { get; set; }
+        public DbSet<PatientTreatment> PatientTreatment { get; set; }
         public DbSet<iCareDocument> iCareDocuments { get; set; }
         public DbSet<ModificationHistory> ModificationHistories { get; set; }
         public DbSet<Drug> Drugs { get; set; }

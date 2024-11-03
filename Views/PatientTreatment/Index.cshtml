@@ -1,31 +1,31 @@
 ﻿@model IEnumerable<iCareWebApplication.Models.PatientTreatment>
 
 @{
-    ViewData["Title"] = "PatientTreatment List";
+    ViewData["Title"] = "Patient Treatments";
 }
 
 <h2>Patient Treatments</h2>
 
-<table class="table">
+<a asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary">Add New Treatment</a>
+
+<table class="table mt-3">
     <thead>
         <tr>
-            <th>PatientTreatmentID</th>
-            <th>PatientID</th>
-            <th>WorkerID</th>
+            <th>Treatments</th>
+            <th>Description</th>
+            <th>Treatment Date</th>
+            <th>Worker Name</th>
         </tr>
     </thead>
     <tbody>
-        @foreach (var patient in Model)
+        @foreach (var treatment in Model)
         {
             <tr>
-                <td>@patient.PatientTreatmentId</td>
-                <td>@patient.PatientId</td>
-                <td>@patient.WorkerId</td>
+                <td>@treatment.PatientTreatmentId</td>
+                <td>@treatment.Description</td>
+                <td>@treatment.TreatmentDate.ToString("MM/dd/yyyy")</td>
+                <td>@treatment.WorkerId</td>
             </tr>
         }
     </tbody>
 </table>
-
-<p>
-    <a asp-action="Create" class="btn btn-primary">Add New Role</a>
-</p>
