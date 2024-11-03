@@ -105,6 +105,25 @@ namespace iCareWebApplication.Controllers
             return View("Index", patients); // Reuse the Index view to display patients
         }
 
+        public async Task<IActionResult> AssignablePatients()
+        {
+            int? workerId = HttpContext.Session.GetInt32("UserId");
+
+            if (workerId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Get list of patients who are either not assigned or not actively assigned to the logged-in worker
+            var assignablePatients = await _context.Patient
+                .Where(p => !_context.PatientAssignment.Any(pa => pa.PatientId == p.PatientId && pa.WorkerId == workerId && pa.Active))
+                .ToListAsync();
+
+            return View(assignablePatients);
+        }
+
+
+
     }
 }
 
