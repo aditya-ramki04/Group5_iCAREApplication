@@ -230,6 +230,33 @@ namespace iCareWebApplication.Controllers
             return RedirectToAction("Index");
         }
 
+        // POST: iCareDocument/DeleteSelected
+        [HttpPost]
+        public async Task<IActionResult> DeleteSelected(int[] selectedDocumentIds)
+        {
+            foreach (var docId in selectedDocumentIds)
+            {
+                var document = await _context.iCareDocuments.FindAsync(docId);
+                if (document != null)
+                {
+                    // Delete associated PDF file
+                    var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{docId}.pdf");
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    // Remove document record from the database
+                    _context.iCareDocuments.Remove(document);
+                }
+            }
+
+            // Save changes to the database
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
         public IActionResult Download(int id)
         {
             // Locate the PDF file
