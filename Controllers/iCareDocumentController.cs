@@ -38,21 +38,13 @@ namespace iCareWebApplication.Controllers
         }
         //
         [HttpPost]
-        public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description, int drugId)
+        public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description)
         {
             if (string.IsNullOrEmpty(fileType) || patientId <= 0)
             {
                 ModelState.AddModelError("", "Invalid file type or patient ID.");
                 return View("RegisterDocument");
             }
-
-            var selectedDrug = await _context.Drugs.FirstOrDefaultAsync(d => d.DrugId == drugId);
-            if (selectedDrug == null)
-            {
-                ModelState.AddModelError("", "Selected drug not found.");
-                return View("RegisterDocument");
-            }
-
 
             var newDocument = new iCareDocument
             {
@@ -66,8 +58,18 @@ namespace iCareWebApplication.Controllers
                 ModifiedBy = createdBy
             };
 
+            // Add the document to the iCareDocuments table
             _context.iCareDocuments.Add(newDocument);
             await _context.SaveChangesAsync();
+
+            // Increment DocumentCount for the patient
+            var patient = await _context.Patient.FindAsync(patientId);
+            if (patient != null)
+            {
+                patient.DocumentCount += 1;
+                _context.Update(patient);
+                await _context.SaveChangesAsync();
+            }
 
             try
             {
@@ -88,11 +90,6 @@ namespace iCareWebApplication.Controllers
                     pdfDoc.Add(new Paragraph($"Last Modified: {newDocument.LastModified}"));
                     pdfDoc.Add(new Paragraph($"Modified By: {newDocument.ModifiedBy}"));
                     pdfDoc.Add(new Paragraph($"Description: {newDocument.Description}"));
-                    pdfDoc.Add(new Paragraph("Drug Information:"));
-                    pdfDoc.Add(new Paragraph($"Drug ID: {selectedDrug.DrugId}"));
-                    pdfDoc.Add(new Paragraph($"Drug Name: {selectedDrug.DrugName}"));
-                    pdfDoc.Add(new Paragraph($"Drug Description: {selectedDrug.Description}"));
-                    pdfDoc.Add(new Paragraph($"External ID: {selectedDrug.ExternalId}"));
 
                     pdfDoc.Close();
                 }
@@ -106,23 +103,10 @@ namespace iCareWebApplication.Controllers
                 ModelState.AddModelError("", "Error generating PDF: " + ex.Message);
                 return View("RegisterDocument");
             }
+
             return RedirectToAction("Index");
         }
-        public IActionResult Download(int id)
-        {
-            // Locate the PDF file
-            string filePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{id}.pdf");
-
-            if (System.IO.File.Exists(filePath))
-            {
-                return PhysicalFile(filePath, "application/pdf", $"{id}.pdf");
-            }
-            else
-            {
-                // Handle file not found case
-                return NotFound("File not found.");
-            }
-        }
+   
 
     }
 }
