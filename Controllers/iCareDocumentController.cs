@@ -36,7 +36,7 @@ namespace iCareWebApplication.Controllers
             ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
             return View();
         }
-
+        //
         [HttpPost]
         public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description, int drugId)
         {
