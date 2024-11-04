@@ -54,7 +54,6 @@ namespace iCareWebApplication.Controllers
                 return View("RegisterDocument");
             }
 
-
             var newDocument = new iCareDocument
             {
                 PatientId = patientId,
@@ -67,7 +66,18 @@ namespace iCareWebApplication.Controllers
                 ModifiedBy = createdBy
             };
 
+            // Add the new document to the database context
             _context.iCareDocuments.Add(newDocument);
+
+            // Retrieve the associated patient and update DocumentCount
+            var patient = await _context.Patient.FindAsync(patientId);
+            if (patient != null)
+            {
+                patient.DocumentCount++; // Increment DocumentCount
+                _context.Update(patient); // Mark the patient as modified
+            }
+
+            // Save changes to the database
             await _context.SaveChangesAsync();
 
             try
@@ -107,8 +117,10 @@ namespace iCareWebApplication.Controllers
                 ModelState.AddModelError("", "Error generating PDF: " + ex.Message);
                 return View("RegisterDocument");
             }
+
             return RedirectToAction("Index");
         }
+
         public IActionResult Download(int id)
         {
             // Locate the PDF file
