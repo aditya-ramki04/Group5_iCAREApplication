@@ -39,19 +39,12 @@ namespace iCareWebApplication.Controllers
         }
         //
         [HttpPost]
-        public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description, int drugId)
+        public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description)
         {
             if (string.IsNullOrEmpty(fileType) || patientId <= 0)
             {
                 ModelState.AddModelError("", "Invalid file type or patient ID.");
-                return View("CreateDocument");
-            }
-
-            var selectedDrug = await _context.Drugs.FirstOrDefaultAsync(d => d.DrugId == drugId);
-            if (selectedDrug == null)
-            {
-                ModelState.AddModelError("", "Selected drug not found.");
-                return View("CreateDocument");
+                return View("RegisterDocument");
             }
 
             var newDocument = new iCareDocument
@@ -66,12 +59,22 @@ namespace iCareWebApplication.Controllers
                 ModifiedBy = createdBy
             };
 
+            // Add the document to the iCareDocuments table
             _context.iCareDocuments.Add(newDocument);
             await _context.SaveChangesAsync();
 
+            // Increment DocumentCount for the patient
+            var patient = await _context.Patient.FindAsync(patientId);
+            if (patient != null)
+            {
+                patient.DocumentCount += 1;
+                _context.Update(patient);
+                await _context.SaveChangesAsync();
+            }
+
             try
             {
-                string pdfFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{newDocument.iCareDocumentId}.pdf");
+                string pdfFilePath = Path.Combine("wwwroot", "documents", $"{newDocument.iCareDocumentId}.pdf");
                 using (var stream = new FileStream(pdfFilePath, FileMode.Create))
                 {
                     Document pdfDoc = new Document(PageSize.A4);
@@ -88,11 +91,6 @@ namespace iCareWebApplication.Controllers
                     pdfDoc.Add(new Paragraph($"Last Modified: {newDocument.LastModified}"));
                     pdfDoc.Add(new Paragraph($"Modified By: {newDocument.ModifiedBy}"));
                     pdfDoc.Add(new Paragraph($"Description: {newDocument.Description}"));
-                    pdfDoc.Add(new Paragraph("Drug Information:"));
-                    pdfDoc.Add(new Paragraph($"Drug ID: {selectedDrug.DrugId}"));
-                    pdfDoc.Add(new Paragraph($"Drug Name: {selectedDrug.DrugName}"));
-                    pdfDoc.Add(new Paragraph($"Drug Description: {selectedDrug.Description}"));
-                    pdfDoc.Add(new Paragraph($"External ID: {selectedDrug.ExternalId}"));
 
                     pdfDoc.Close();
                 }
@@ -104,10 +102,12 @@ namespace iCareWebApplication.Controllers
             catch (Exception ex)
             {
                 ModelState.AddModelError("", "Error generating PDF: " + ex.Message);
-                return View("CreateDocument");
+                return View("RegisterDocument");
             }
+
             return RedirectToAction("Index");
         }
+
 
         // GET: iCareDocument/EditDocument/5
         public async Task<IActionResult> EditDocument(int id)
@@ -246,6 +246,15 @@ namespace iCareWebApplication.Controllers
                         System.IO.File.Delete(filePath);
                     }
 
+                    // Get the associated patient
+                    var patient = await _context.Patient.FindAsync(document.PatientId);
+                    if (patient != null)
+                    {
+                        // Decrement DocumentCount for the patient
+                        patient.DocumentCount = Math.Max(0, patient.DocumentCount - 1); // Ensure DocumentCount doesn't go below zero
+                        _context.Update(patient); // Mark the patient as modified
+                    }
+
                     // Remove document record from the database
                     _context.iCareDocuments.Remove(document);
                 }
@@ -256,6 +265,7 @@ namespace iCareWebApplication.Controllers
 
             return RedirectToAction("Index");
         }
+
 
         public IActionResult Download(int id)
         {
