@@ -1,0 +1,53 @@
+﻿
+@model iCareWebApplication.Models.iCareDocument
+
+<h2>Edit Document</h2>
+
+<form asp-action="EditDocument" method="post">
+    <input type="hidden" asp-for="iCareDocumentId" />
+    <div class="form-group">
+        <label for="PatientId">Select Patient</label>
+        <select asp-for="PatientId" asp-items="ViewBag.Patients" class="form-control" required>
+            <option value="">-- Select Patient --</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="FilePath">File Path</label>
+        <input asp-for="FilePath" type="text" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="FileType">File Type</label>
+        <input asp-for="FileType" type="text" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="CreatedBy">Created By</label>
+        <input asp-for="CreatedBy" type="number" class="form-control" required readonly />
+    </div>
+    <div class="form-group">
+        <label for="CreationDate">Creation Date</label>
+        <input asp-for="CreationDate" type="datetime-local" class="form-control" required readonly />
+    </div>
+    <div class="form-group">
+        <label for="LastModified">Last Modified Date</label>
+        <input asp-for="LastModified" type="datetime-local" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="ModifiedBy">Modified By</label>
+        <input asp-for="ModifiedBy" type="number" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Description">Description</label>
+        <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+    </div>
+    <div class="form-group">
+        <label for="drugSelect">Select a drug:</label>
+        <select id="drugSelect" name="DrugId" class="form-control">
+            <option value="" selected disabled>Select a drug...</option>
+            @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
+            {
+                <option value="@drug.DrugId">@drug.DrugName</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn btn-primary">Update Document</button>
+</form>
