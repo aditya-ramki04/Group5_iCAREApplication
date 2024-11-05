@@ -50,6 +50,29 @@
         </select>
     </div>
     <div class="form-group">
+        <label>Uploaded Images:</label>
+        <div>
+            @{
+                var imagePaths = ViewBag.ImagePaths as List<string>;
+            }
+
+            @if (imagePaths != null && imagePaths.Any())
+            {
+                foreach (var imagePath in imagePaths)
+                {
+                    <div>
+                        <span>@imagePath</span>
+                        <input type="checkbox" name="removeImages" value="@imagePath" /> Remove
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No images uploaded.</p>
+            }
+        </div>
+    </div>
+    <div class="form-group">
         <label for="uploadingImage">Upload Images:</label>
         <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple/>
     </div>

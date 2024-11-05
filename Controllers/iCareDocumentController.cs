@@ -123,29 +123,29 @@ namespace iCareWebApplication.Controllers
             ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name", document.PatientId);
             ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
 
+            // Assuming image files are stored in a directory named after document IDs.
+            var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", id.ToString());
+            var imagePaths = Directory.Exists(imageDirectory)
+                ? Directory.GetFiles(imageDirectory).Select(Path.GetFileName).ToList()
+                : new List<string>();
+
+            ViewBag.ImagePaths = imagePaths; // Pass these to the view directly
+
             return View(document);
         }
 
         // POST: iCareDocument/EditDocument/5
         [HttpPost]
-        public async Task<IActionResult> EditDocument(int iCareDocumentId, int patientId, string filePath, string fileType, int createdBy, DateTime creationDate, int modifiedBy, DateTime lastModified, string description, int drugId, IFormFile[] imageFiles)
+        public async Task<IActionResult> EditDocument(
+            int iCareDocumentId, int patientId, string filePath, string fileType,
+            int createdBy, DateTime creationDate, int modifiedBy, DateTime lastModified, string description, int drugId,
+            IFormFile[] imageFiles, string[] removeImages)
         {
             if (!ModelState.IsValid)
             {
                 ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name", patientId);
                 ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
-                return View(new iCareDocument
-                {
-                    iCareDocumentId = iCareDocumentId,
-                    PatientId = patientId,
-                    FilePath = filePath,
-                    FileType = fileType,
-                    CreatedBy = createdBy,
-                    CreationDate = creationDate,
-                    ModifiedBy = modifiedBy,
-                    LastModified = lastModified,
-                    Description = description
-                });
+                return View(await _context.iCareDocuments.FindAsync(iCareDocumentId));
             }
 
             var existingDocument = await _context.iCareDocuments.FindAsync(iCareDocumentId);
@@ -154,7 +154,7 @@ namespace iCareWebApplication.Controllers
                 return NotFound();
             }
 
-            // Update document details
+            // Update document properties
             existingDocument.PatientId = patientId;
             existingDocument.FilePath = filePath;
             existingDocument.FileType = fileType;
@@ -162,7 +162,41 @@ namespace iCareWebApplication.Controllers
             existingDocument.LastModified = DateTime.Now;
             existingDocument.ModifiedBy = modifiedBy;
 
-            // Create a new PDF with updated information and include multiple images
+            var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", iCareDocumentId.ToString());
+            if (!Directory.Exists(imageDirectory))
+            {
+                Directory.CreateDirectory(imageDirectory);
+            }
+
+            // Remove selected images
+            if (removeImages != null)
+            {
+                foreach (var imagePath in removeImages)
+                {
+                    var fullPath = Path.Combine(imageDirectory, imagePath);
+                    if (System.IO.File.Exists(fullPath))
+                    {
+                        System.IO.File.Delete(fullPath);
+                    }
+                }
+            }
+
+            // Save new images
+            foreach (var imageFile in imageFiles)
+            {
+                if (imageFile.Length > 0)
+                {
+                    var imageFileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
+                    var filePathToSave = Path.Combine(imageDirectory, imageFileName);
+
+                    using (var stream = new FileStream(filePathToSave, FileMode.Create))
+                    {
+                        await imageFile.CopyToAsync(stream);
+                    }
+                }
+            }
+
+            // Regenerate the PDF without removed images
             string pdfFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{iCareDocumentId}.pdf");
             using (var docStream = new FileStream(pdfFilePath, FileMode.Create))
             {
@@ -190,21 +224,14 @@ namespace iCareWebApplication.Controllers
                     pdfDoc.Add(new Paragraph($"Drug Description: {selectedDrug.Description}"));
                 }
 
-                // Add each uploaded image to the PDF
-                foreach (var imageFile in imageFiles)
+                // Add still existing images to the PDF
+                var remainingImages = Directory.GetFiles(imageDirectory);
+                foreach (var imagePath in remainingImages)
                 {
-                    if (imageFile != null && imageFile.Length > 0)
-                    {
-                        using (var memoryStream = new MemoryStream())
-                        {
-                            await imageFile.CopyToAsync(memoryStream);
-                            var imgBytes = memoryStream.ToArray();
-                            var img = iTextSharp.text.Image.GetInstance(imgBytes);
-                            img.ScaleToFit(PageSize.A4.Width - 50, PageSize.A4.Height - 50); // Scale image 
-                            img.Alignment = Element.ALIGN_CENTER;
-                            pdfDoc.Add(img);
-                        }
-                    }
+                    var img = iTextSharp.text.Image.GetInstance(imagePath);
+                    img.ScaleToFit(PageSize.A4.Width - 50, PageSize.A4.Height - 50); // Scale image 
+                    img.Alignment = Element.ALIGN_CENTER;
+                    pdfDoc.Add(img);
                 }
 
                 pdfDoc.Close();
@@ -214,31 +241,6 @@ namespace iCareWebApplication.Controllers
             _context.Update(existingDocument);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index");
-        }
-
-        // POST: iCareDocument/DeleteSelected
-        [HttpPost]
-        public async Task<IActionResult> DeleteSelected(int[] selectedDocumentIds)
-        {
-            foreach (var docId in selectedDocumentIds)
-            {
-                var document = await _context.iCareDocuments.FindAsync(docId);
-                if (document != null)
-                {
-                    // Delete associated PDF file
-                    var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{docId}.pdf");
-                    if (System.IO.File.Exists(filePath))
-                    {
-                        System.IO.File.Delete(filePath);
-                    }
-
-                    // Remove document from database
-                    _context.iCareDocuments.Remove(document);
-                }
-            }
-
-            await _context.SaveChangesAsync();
             return RedirectToAction("Index");
         }
 
