@@ -42,7 +42,8 @@ namespace iCareWebApplication.Controllers
 
         // POST: iCareDocument/RegisterDocument
         [HttpPost]
-        public async Task<IActionResult> RegisterDocument(int patientId, string filePath, string fileType, int createdBy, string description, int drugId)
+        public async Task<IActionResult> RegisterDocument(
+            int patientId, string fileType, int createdBy, string description, int drugId, IFormFile[] imageFiles)
         {
             if (string.IsNullOrEmpty(fileType) || patientId <= 0)
             {
@@ -57,34 +58,37 @@ namespace iCareWebApplication.Controllers
                 return View("CreateDocument");
             }
 
-            var newDocument = new iCareDocument
-            {
-                PatientId = patientId,
-                FilePath = filePath,
-                FileType = fileType,
-                CreatedBy = createdBy,
-                Description = description,
-                CreationDate = DateTime.Now,
-                LastModified = DateTime.Now,
-                ModifiedBy = createdBy
-            };
-
-            _context.iCareDocuments.Add(newDocument);
-            await _context.SaveChangesAsync();
-
             try
             {
+                // Create a new document entry with placeholder FilePath to get an ID
+                var newDocument = new iCareDocument
+                {
+                    PatientId = patientId,
+                    FileType = fileType,
+                    CreatedBy = createdBy,
+                    Description = description,
+                    CreationDate = DateTime.Now,
+                    LastModified = DateTime.Now,
+                    ModifiedBy = createdBy,
+                    FilePath = "placeholder"
+                };
+
+                _context.iCareDocuments.Add(newDocument);
+                await _context.SaveChangesAsync(); // Get the auto-generated ID
+
+                // Define the accurate PDF path
                 string pdfFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{newDocument.iCareDocumentId}.pdf");
+
+                // Create and save the PDF
                 using (var stream = new FileStream(pdfFilePath, FileMode.Create))
                 {
-                    Document pdfDoc = new Document(PageSize.A4);
+                    var pdfDoc = new Document(PageSize.A4);
                     PdfWriter.GetInstance(pdfDoc, stream);
                     pdfDoc.Open();
 
-                    // Add content to the PDF
+                    // Document content
                     pdfDoc.Add(new Paragraph("iCare Document"));
                     pdfDoc.Add(new Paragraph($"Patient ID: {newDocument.PatientId}"));
-                    pdfDoc.Add(new Paragraph($"File Path: {newDocument.FilePath}"));
                     pdfDoc.Add(new Paragraph($"File Type: {newDocument.FileType}"));
                     pdfDoc.Add(new Paragraph($"Created By: {newDocument.CreatedBy}"));
                     pdfDoc.Add(new Paragraph($"Creation Date: {newDocument.CreationDate}"));
@@ -92,26 +96,68 @@ namespace iCareWebApplication.Controllers
                     pdfDoc.Add(new Paragraph($"Modified By: {newDocument.ModifiedBy}"));
                     pdfDoc.Add(new Paragraph($"Description: {newDocument.Description}"));
                     pdfDoc.Add(new Paragraph("Drug Information:"));
-                    pdfDoc.Add(new Paragraph($"Drug ID: {selectedDrug.DrugId}"));
-                    pdfDoc.Add(new Paragraph($"Drug Name: {selectedDrug.DrugName}"));
-                    pdfDoc.Add(new Paragraph($"Drug Description: {selectedDrug.Description}"));
+                    if (selectedDrug != null)
+                    {
+                        pdfDoc.Add(new Paragraph($"Drug ID: {selectedDrug.DrugId}"));
+                        pdfDoc.Add(new Paragraph($"Drug Name: {selectedDrug.DrugName}"));
+                        pdfDoc.Add(new Paragraph($"Drug Description: {selectedDrug.Description}"));
+                    }
+
+                    // Image handling
+                    string imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", newDocument.iCareDocumentId.ToString());
+                    if (!Directory.Exists(imageDirectory))
+                    {
+                        Directory.CreateDirectory(imageDirectory);
+                    }
+
+                    // Save and include images in PDF
+                    foreach (var imageFile in imageFiles)
+                    {
+                        if (imageFile.Length > 0)
+                        {
+                            var imageFileName = $"{Guid.NewGuid()}_{imageFile.FileName}";
+                            var filePathToSave = Path.Combine(imageDirectory, imageFileName);
+
+                            using (var imgStream = new FileStream(filePathToSave, FileMode.Create))
+                            {
+                                await imageFile.CopyToAsync(imgStream);
+                            }
+
+                            // Add image to PDF
+                            var img = iTextSharp.text.Image.GetInstance(filePathToSave);
+                            img.ScaleToFit(PageSize.A4.Width - 50, PageSize.A4.Height - 50);
+                            img.Alignment = Element.ALIGN_CENTER;
+                            pdfDoc.Add(img);
+                        }
+                    }
 
                     pdfDoc.Close();
                 }
 
+                // Confirm the PDF path
                 newDocument.FilePath = pdfFilePath;
                 _context.Update(newDocument);
+
+                // Update DocumentCount for the associated patient
+                var patient = await _context.Patient.FindAsync(patientId);
+                if (patient != null)
+                {
+                    patient.DocumentCount++;
+                    _context.Update(patient);
+                }
+
                 await _context.SaveChangesAsync();
             }
             catch (Exception ex)
             {
-                ModelState.AddModelError("", "Error generating PDF: " + ex.Message);
+                ModelState.AddModelError("", "Error generating PDF or saving images: " + ex.Message);
                 return View("CreateDocument");
             }
+
             return RedirectToAction("Index");
         }
 
-        // GET: iCareDocument/EditDocument/5
+        // Get: iCareDocument/EditDocument/5
         public async Task<IActionResult> EditDocument(int id)
         {
             var document = await _context.iCareDocuments.FindAsync(id);
@@ -123,13 +169,12 @@ namespace iCareWebApplication.Controllers
             ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name", document.PatientId);
             ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
 
-            // Assuming image files are stored in a directory named after document IDs.
             var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", id.ToString());
             var imagePaths = Directory.Exists(imageDirectory)
                 ? Directory.GetFiles(imageDirectory).Select(Path.GetFileName).ToList()
                 : new List<string>();
 
-            ViewBag.ImagePaths = imagePaths; // Pass these to the view directly
+            ViewBag.ImagePaths = imagePaths;
 
             return View(document);
         }
@@ -152,6 +197,13 @@ namespace iCareWebApplication.Controllers
             if (existingDocument == null)
             {
                 return NotFound();
+            }
+
+            // Remove the existing PDF if it exists
+            var existingFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{existingDocument.iCareDocumentId}.pdf");
+            if (System.IO.File.Exists(existingFilePath))
+            {
+                System.IO.File.Delete(existingFilePath);
             }
 
             // Update document properties
@@ -196,7 +248,7 @@ namespace iCareWebApplication.Controllers
                 }
             }
 
-            // Regenerate the PDF without removed images
+            // Regenerate the PDF with updated information and new images
             string pdfFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{iCareDocumentId}.pdf");
             using (var docStream = new FileStream(pdfFilePath, FileMode.Create))
             {
@@ -229,7 +281,7 @@ namespace iCareWebApplication.Controllers
                 foreach (var imagePath in remainingImages)
                 {
                     var img = iTextSharp.text.Image.GetInstance(imagePath);
-                    img.ScaleToFit(PageSize.A4.Width - 50, PageSize.A4.Height - 50); // Scale image 
+                    img.ScaleToFit(PageSize.A4.Width - 50, PageSize.A4.Height - 50);
                     img.Alignment = Element.ALIGN_CENTER;
                     pdfDoc.Add(img);
                 }
@@ -239,6 +291,47 @@ namespace iCareWebApplication.Controllers
 
             existingDocument.FilePath = pdfFilePath;
             _context.Update(existingDocument);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> DeleteSelected(int[] selectedDocumentIds)
+        {
+            foreach (var docId in selectedDocumentIds)
+            {
+                var document = await _context.iCareDocuments.FindAsync(docId);
+                if (document != null)
+                {
+                    // Delete associated PDF file
+                    var filePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{docId}.pdf");
+                    if (System.IO.File.Exists(filePath))
+                    {
+                        System.IO.File.Delete(filePath);
+                    }
+
+                    // Remove images associated with the document
+                    var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", docId.ToString());
+                    if (Directory.Exists(imageDirectory))
+                    {
+                        Directory.Delete(imageDirectory, true);
+                    }
+
+                    // Update DocumentCount for the associated patient
+                    var patient = await _context.Patient.FindAsync(document.PatientId);
+                    if (patient != null)
+                    {
+                        patient.DocumentCount = Math.Max(0, patient.DocumentCount - 1);
+                        _context.Update(patient);
+                    }
+
+                    // Remove document record from the database
+                    _context.iCareDocuments.Remove(document);
+                }
+            }
+
+            // Save changes to the database
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index");
