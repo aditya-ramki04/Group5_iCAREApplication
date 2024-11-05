@@ -3,7 +3,7 @@
 
 <h2>Edit Document</h2>
 
-<form asp-action="EditDocument" method="post">
+<form asp-action="EditDocument" method="post" enctype="multipart/form-data">
     <input type="hidden" asp-for="iCareDocumentId" />
     <div class="form-group">
         <label for="PatientId">Select Patient</label>
@@ -42,12 +42,16 @@
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
         <select id="drugSelect" name="DrugId" class="form-control">
-            <option value="" selected disabled>Select a drug...</option>
+            <option value="" disabled>Select a drug...</option>
             @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
             {
                 <option value="@drug.DrugId">@drug.DrugName</option>
             }
         </select>
+    </div>
+    <div class="form-group">
+        <label for="uploadingImage">Upload Images:</label>
+        <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple/>
     </div>
     <button type="submit" class="btn btn-primary">Update Document</button>
 </form>
