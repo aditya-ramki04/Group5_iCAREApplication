@@ -1,4 +1,6 @@
-﻿<!DOCTYPE html>
+﻿
+
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
@@ -22,21 +24,30 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Patient" asp-action="Index">Patient Records</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Patient" asp-action="AssignablePatients">Assign Patients</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Drug" asp-action="Index">Drugs</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Board" asp-action="MyBoard">My Board</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="iCareDocument" asp-action="Index">Documents</a>
-                        </li>
+                        @if (Context.Session.GetInt32("RoleId") != null)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Patient" asp-action="Index">Patient Records</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Patient" asp-action="AssignablePatients">Assign Patients</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-area="" asp-controller="Drug" asp-action="Index">Drugs</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Board" asp-action="MyBoard">My Board</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="iCareDocument" asp-action="Index">Documents</a>
+                            </li>
+                        }
+                        @if (Context.Session.GetInt32("RoleId") == 1)
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="User" asp-action="Index">Users</a>
+                            </li>
+                        }
                     </ul>
                     <ul class="navbar-nav">
                         @if (User.Identity.IsAuthenticated)

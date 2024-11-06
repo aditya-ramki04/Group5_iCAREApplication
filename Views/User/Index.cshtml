@@ -1,31 +1,37 @@
 ﻿@model IEnumerable<iCareWebApplication.Models.User>
 
 @{
-    ViewData["Title"] = "User List";
+    ViewData["Title"] = "Users";
 }
 
-<h2>User List</h2>
+<h1>Users</h1>
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>User ID</th>
-            <th>UserName</th>
-            <th>Permissions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
+    <a asp-action="Register" asp-controller="Account" class="btn btn-secondary">Register</a>
+
+<form method="post" asp-action="DeleteSelected">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@user.UserId</td>
-                <td>@user.UserName</td>
-                <td>@user.PasswordHash</td>
+                <th></th>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Employee Type</th>
+                <th>Account Status</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var user in Model)
+            {
+                <tr>
+                    <td><input type="checkbox" name="selectedUserIds" value="@user.UserId" /></td>
+                    <td>@user.FullName</td>
+                    <td>@user.Email</td>
+                    <td>@user.RoleID</td>
+                    <td>@user.AccountStatus</td>
+                </tr>
+            }
+        </tbody>
+    </table>
 
-<p>
-    <a asp-action="Create" class="btn btn-primary">Add New Role</a>
-</p>
+    <button type="submit" class="btn btn-danger">Delete Selected Users</button>
+</form>
