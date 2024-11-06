@@ -122,6 +122,44 @@ namespace iCareWebApplication.Controllers
             return View(assignablePatients);
         }
 
+        //public async Task<IActionResult> AssignByGeoLocation(int? geoCodeId)
+        //{
+        //    int? workerId = HttpContext.Session.GetInt32("UserId");
+
+        //    // Ensure the user is logged in
+        //    if (workerId == null)
+        //    {
+        //        return RedirectToAction("Login", "Account");
+        //    }
+
+        //    // Fetch the list of patients filtered by the selected GeoCodeId if provided
+        //    var patients = geoCodeId.HasValue
+        //        ? await _context.Patient.Where(p => p.GeoCodeId == geoCodeId).ToListAsync()
+        //        : await _context.Patient.ToListAsync();
+
+        //    return View("AssignablePatients", patients);
+
+        //}
+        public async Task<IActionResult> AssignByGeoLocation(int? geoCodeId)
+        {
+            // Get the logged-in user's ID (e.g., doctor or worker's ID)
+            int? workerId = HttpContext.Session.GetInt32("UserId");
+
+            // Ensure the user is logged in
+            if (workerId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Fetch the list of patients filtered by GeoCodeId if provided; otherwise, get all patients
+            var patients = geoCodeId.HasValue && geoCodeId.Value > 0
+                ? await _context.Patient.Where(p => p.GeoCodeId == geoCodeId).ToListAsync()
+                : await _context.Patient.ToListAsync();
+
+            ViewBag.SelectedGeoCodeId = geoCodeId; // Pass the selected value to the view
+            return View("AssignablePatients", patients); // This should match your view's name
+        }
+
     }
 }
 
