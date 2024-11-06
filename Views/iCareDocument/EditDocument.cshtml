@@ -42,7 +42,7 @@
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
         <select id="drugSelect" name="DrugId" class="form-control">
-            <option value="" disabled>Select a drug...</option>
+            <option value="" selected disabled>Select a drug...</option>
             @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
             {
                 <option value="@drug.DrugId">@drug.DrugName</option>
