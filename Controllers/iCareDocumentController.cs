@@ -182,9 +182,9 @@ namespace iCareWebApplication.Controllers
         // POST: iCareDocument/EditDocument/5
         [HttpPost]
         public async Task<IActionResult> EditDocument(
-            int iCareDocumentId, int patientId, string filePath, string fileType,
-            int createdBy, DateTime creationDate, int modifiedBy, DateTime lastModified, string description, int drugId,
-            IFormFile[] imageFiles, string[] removeImages)
+    int iCareDocumentId, int patientId, string fileType,
+    int createdBy, string description, int drugId,
+    IFormFile[] imageFiles, string[] removeImages)
         {
             if (!ModelState.IsValid)
             {
@@ -199,20 +199,12 @@ namespace iCareWebApplication.Controllers
                 return NotFound();
             }
 
-            // Remove the existing PDF if it exists
-            var existingFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{existingDocument.iCareDocumentId}.pdf");
-            if (System.IO.File.Exists(existingFilePath))
-            {
-                System.IO.File.Delete(existingFilePath);
-            }
-
             // Update document properties
             existingDocument.PatientId = patientId;
-            existingDocument.FilePath = filePath;
             existingDocument.FileType = fileType;
             existingDocument.Description = description;
             existingDocument.LastModified = DateTime.Now;
-            existingDocument.ModifiedBy = modifiedBy;
+            existingDocument.ModifiedBy = createdBy;
 
             var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", iCareDocumentId.ToString());
             if (!Directory.Exists(imageDirectory))
@@ -221,7 +213,7 @@ namespace iCareWebApplication.Controllers
             }
 
             // Remove selected images
-            if (removeImages != null)
+            if (removeImages != null && removeImages.Length > 0)
             {
                 foreach (var imagePath in removeImages)
                 {
@@ -248,7 +240,7 @@ namespace iCareWebApplication.Controllers
                 }
             }
 
-            // Regenerate the PDF with updated information and new images
+            // Update the PDF
             string pdfFilePath = Path.Combine(_hostingEnvironment.WebRootPath, "documents", $"{iCareDocumentId}.pdf");
             using (var docStream = new FileStream(pdfFilePath, FileMode.Create))
             {
@@ -276,7 +268,7 @@ namespace iCareWebApplication.Controllers
                     pdfDoc.Add(new Paragraph($"Drug Description: {selectedDrug.Description}"));
                 }
 
-                // Add still existing images to the PDF
+                // Add remaining images to the PDF
                 var remainingImages = Directory.GetFiles(imageDirectory);
                 foreach (var imagePath in remainingImages)
                 {
