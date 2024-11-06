@@ -1,79 +1,6 @@
-﻿//using Microsoft.AspNetCore.Identity;
-//using Microsoft.AspNetCore.Mvc;
-
-//namespace iCareWebApplication.Controllers
-//{
-//    public class AccountController : Controller
-//    {
-//        private readonly UserManager<ApplicationUser> _userManager;
-//        private readonly SignInManager<ApplicationUser> _signInManager;
-
-//        public AccountController(UserManager<ApplicationUser> userManager, SignInManager<ApplicationUser> signInManager)
-//        {
-//            _userManager = userManager;
-//            _signInManager = signInManager;
-//        }
-
-//        // Login action
-//        [HttpGet]
-//        public IActionResult Login() => View();
-
-//        [HttpPost]
-//        public async Task<IActionResult> Login(LoginViewModel model)
-//        {
-//            if (ModelState.IsValid)
-//            {
-//                var result = await _signInManager.PasswordSignInAsync(model.Email, model.Password, model.RememberMe, lockoutOnFailure: false);
-//                if (result.Succeeded)
-//                {
-//                    return RedirectToAction("Index", "Home");
-//                }
-//                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-//            }
-//            return View(model);
-//        }
-
-//        // Register action
-//        [HttpGet]
-//        public IActionResult Register() => View();
-
-//        [HttpPost]
-//        public async Task<IActionResult> Register(RegisterViewModel model)
-//        {
-//            if (ModelState.IsValid)
-//            {
-//                var user = new ApplicationUser { UserName = model.Email, Email = model.Email };
-//                var result = await _userManager.CreateAsync(user, model.Password);
-
-//                if (result.Succeeded)
-//                {
-//                    await _userManager.AddToRoleAsync(user, model.Role);
-//                    await _signInManager.SignInAsync(user, isPersistent: false);
-//                    return RedirectToAction("Index", "Home");
-//                }
-//                foreach (var error in result.Errors)
-//                {
-//                    ModelState.AddModelError(string.Empty, error.Description);
-//                }
-//            }
-//            return View(model);
-//        }
-
-//        // Logout action
-//        [HttpPost]
-//        [ValidateAntiForgeryToken]
-//        public async Task<IActionResult> Logout()
-//        {
-//            await _signInManager.SignOutAsync();
-//            return RedirectToAction("Index", "Home");
-//        }
-//    }
-
-//}
-
-using Microsoft.AspNetCore.Mvc;
-using iCareWebApplication.Data; // Ensure this matches the namespace in iCareContext
-using iCareWebApplication.Models; // Ensure this matches the namespace for User model
+﻿using Microsoft.AspNetCore.Mvc;
+using iCareWebApplication.Data; 
+using iCareWebApplication.Models; 
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -93,6 +20,8 @@ namespace iCareWebApplication.Controllers
         [HttpGet]
         public IActionResult Login()
         {
+            int? roleId = HttpContext.Session.GetInt32("RoleId");
+            ViewData["RoleId"] = roleId;
             return View("Login");
         }
 
@@ -113,6 +42,7 @@ namespace iCareWebApplication.Controllers
                 .FirstOrDefault();
 
                 HttpContext.Session.SetInt32("UserId", user.UserId);
+                HttpContext.Session.SetInt32("RoleId", user.RoleID);
                 HttpContext.Session.SetString("Username", user.UserName);
                 HttpContext.Session.SetString("Role", roleName);
 
@@ -128,22 +58,34 @@ namespace iCareWebApplication.Controllers
         [HttpGet]
         public IActionResult Register()
         {
-            return View("Register");
+            int? roleId = HttpContext.Session.GetInt32("RoleId");
+
+            // Check if user is logged in and has admin privileges
+            if (roleId == 1) // Admin role
+            {
+                return View("Register"); // Show the registration view if user is an admin
+            }
+
+            // Redirect non-admin users to Home page
+            return RedirectToAction("Index", "Home");
         }
 
         // POST: /Account/Register
         [HttpPost]
         public async Task<IActionResult> Register(string fullName, string email, string username, string password, string employeeType)
         {
+            int? currentRoleId = HttpContext.Session.GetInt32("RoleID");
+            if (currentRoleId == null || currentRoleId != 1)
+            {
+                return RedirectToAction("Index", "Home");
+            }
+
             // Map EmployeeType to RoleID
             int roleId = employeeType switch
             {
-                "Physician" => 2,
                 "Nurse" => 3,
-                "Receptionist" => 4,
-                "Lab Technician" => 5,
                 "Doctor" => 6,
-                _ => 0 // Default to 0 if no match
+                _ => 0 
             };
 
             if (roleId == 0)
@@ -152,13 +94,12 @@ namespace iCareWebApplication.Controllers
                 return View("Register");
             }
 
-            // Create a new User object with the provided data
             var newUser = new User
             {
                 FullName = fullName,
                 Email = email,
                 UserName = username,
-                PasswordHash = password, // Apply hashing for production
+                PasswordHash = password, 
                 RoleID = roleId,
                 DateCreate = DateTime.Now,
                 AccountStatus = "Active"
