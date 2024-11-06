@@ -12,7 +12,7 @@
             <th>Patient ID</th>
             <th>Name</th>
             <th>Date of Birth</th>
-
+            <th>GeoCodeId</th>
             <!-- Add more columns as needed -->
         </tr>
     </thead>
@@ -23,6 +23,7 @@
                 <td>@patient.PatientId</td>
                 <td>@patient.Name</td>
                 <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>
+                <td>@patient.GeoCodeId</td>
 
             </tr>
         }
