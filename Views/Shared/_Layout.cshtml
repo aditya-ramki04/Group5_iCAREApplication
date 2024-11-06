@@ -49,6 +49,14 @@
                         }
                         else
                         {
+                            @if (Context.Session.GetString("Username") != null)
+                            {
+                                <li class="nav-item">
+                                    <span class="nav-link">Hello, @Context.Session.GetString("Username")</span>
+                                </li>
+                            }
+
+
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
                             </li>
