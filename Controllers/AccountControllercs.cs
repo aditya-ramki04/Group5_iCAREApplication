@@ -74,18 +74,24 @@ namespace iCareWebApplication.Controllers
         [HttpPost]
         public async Task<IActionResult> Register(string fullName, string email, string username, string password, string employeeType)
         {
-            int? currentRoleId = HttpContext.Session.GetInt32("RoleID");
+
+            // Check if the logged-in user is an admin
+            int? currentRoleId = HttpContext.Session.GetInt32("RoleId");
             if (currentRoleId == null || currentRoleId != 1)
             {
+                // Redirect non-admin users to the home page or another appropriate page
                 return RedirectToAction("Index", "Home");
             }
 
             // Map EmployeeType to RoleID
             int roleId = employeeType switch
             {
+                "Physician" => 2,
                 "Nurse" => 3,
+                "Receptionist" => 4,
+                "Lab Technician" => 5,
                 "Doctor" => 6,
-                _ => 0 
+                _ => 0 // Default to 0 if no match
             };
 
             if (roleId == 0)
@@ -94,12 +100,13 @@ namespace iCareWebApplication.Controllers
                 return View("Register");
             }
 
+            // Create a new User object with the provided data
             var newUser = new User
             {
                 FullName = fullName,
                 Email = email,
                 UserName = username,
-                PasswordHash = password, 
+                PasswordHash = password, // Apply hashing for production
                 RoleID = roleId,
                 DateCreate = DateTime.Now,
                 AccountStatus = "Active"
