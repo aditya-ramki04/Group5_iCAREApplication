@@ -117,7 +117,7 @@ namespace iCareWebApplication.Controllers
             await _context.SaveChangesAsync();
 
             // Redirect to Login page upon successful registration
-            return RedirectToAction("Login");
+            return RedirectToAction("Index", "Home");
         }
     }
 }   
