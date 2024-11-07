@@ -9,14 +9,7 @@
             <option value="">-- Select Patient --</option>
         </select>
     </div>
-    <div class="form-group">
-        <label for="FilePath">File Path</label>
-        <input asp-for="FilePath" type="text" class="form-control" required />
-    </div>
-    <div class="form-group">
-        <label for="FileType">File Type</label>
-        <input asp-for="FileType" type="text" class="form-control" required />
-    </div>
+    
     <div class="form-group">
         <label for="CreatedBy">Created By</label>
         <input asp-for="CreatedBy" type="number" class="form-control" required />
@@ -29,10 +22,7 @@
         <label for="LastModified">Last Modified Date</label>
         <input asp-for="LastModified" type="datetime-local" class="form-control" required />
     </div>
-    <div class="form-group">
-        <label for="ModifiedBy">Modified By</label>
-        <input asp-for="ModifiedBy" type="number" class="form-control" required />
-    </div>
+
     <div class="form-group">
         <label for="Description">Description</label>
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
