@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 
 namespace iCareWebApplication.Controllers
-    {
+{
     public class PatientController : Controller
     {
         private readonly iCareContext _context;
@@ -174,22 +174,67 @@ namespace iCareWebApplication.Controllers
 
         public async Task<IActionResult> AssignByGeoLocation(int? geoCodeId)
         {
-            // Get the logged-in user's ID (e.g., doctor or worker's ID)
             int? workerId = HttpContext.Session.GetInt32("UserId");
 
-            // Ensure the user is logged in
             if (workerId == null)
             {
                 return RedirectToAction("Login", "Account");
             }
 
-            // Fetch the list of patients filtered by GeoCodeId if provided; otherwise, get all patients
-            var patients = geoCodeId.HasValue && geoCodeId.Value > 0
-                ? await _context.Patient.Where(p => p.GeoCodeId == geoCodeId).ToListAsync()
-                : await _context.Patient.ToListAsync();
+            // Get the role ID of the logged-in worker
+            var currentUser = await _context.User.FindAsync(workerId);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            int nurseRoleId = 3; // Assuming 3 is the RoleID for Nurse
+            int doctorRoleId = 6; // Assuming 6 is the RoleID for Doctor
+
+            // Start the query with the GeoCodeId filter
+            IQueryable<Patient> assignablePatientsQuery = _context.Patient
+                .Where(p => (!geoCodeId.HasValue || p.GeoCodeId == geoCodeId)
+                    && !_context.PatientAssignment.Any(pa => pa.PatientId == p.PatientId && pa.WorkerId == workerId && pa.Active));
+
+            if (currentUser.RoleID == doctorRoleId)
+            {
+                // If the user is a doctor:
+                // 1. Ensure patients already have at least one nurse assigned.
+                // 2. Ensure no other doctor is assigned to the patient.
+
+                assignablePatientsQuery = assignablePatientsQuery
+                    .Where(p =>
+                        // Check that there is at least one active nurse assigned to the patient
+                        _context.PatientAssignment
+                            .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                            .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                            .Any(u => u.RoleID == nurseRoleId)
+                        &&
+                        // Check that there are no active doctors assigned to the patient
+                        !_context.PatientAssignment
+                            .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                            .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                            .Any(u => u.RoleID == doctorRoleId)
+                    );
+            }
+            else if (currentUser.RoleID == nurseRoleId)
+            {
+                // If the user is a nurse, apply only the nurse assignment limit constraint
+                assignablePatientsQuery = assignablePatientsQuery
+                    .Where(p =>
+                        // Ensure fewer than 3 active nurses are assigned to the patient
+                        _context.PatientAssignment
+                            .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                            .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                            .Count(u => u.RoleID == nurseRoleId) < 3
+                    );
+            }
+
+            // Execute the query and convert to a list
+            var assignablePatients = await assignablePatientsQuery.ToListAsync();
 
             ViewBag.SelectedGeoCodeId = geoCodeId; // Pass the selected value to the view
-            return View("AssignablePatients", patients); // This should match your view's name
+            return View("AssignablePatients", assignablePatients); // This should match your view's name
         }
 
     }
