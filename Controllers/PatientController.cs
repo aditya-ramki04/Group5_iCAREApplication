@@ -114,22 +114,61 @@ namespace iCareWebApplication.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Define the role ID for nurses
-            int nurseRoleId = 3; // Assuming 3 is the RoleID for Nurse in your database
+            // Get the role ID of the logged-in worker
+            var currentUser = await _context.User.FindAsync(workerId);
+            if (currentUser == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
 
-            // Get the list of assignable patients based on:
-            // 1. Patients who are either not assigned or not actively assigned to the current worker.
-            // 2. Patients who have fewer than 3 active nurses assigned.
-            var assignablePatients = await _context.Patient
-                .Where(p => !_context.PatientAssignment.Any(pa => pa.PatientId == p.PatientId && pa.WorkerId == workerId && pa.Active)
-                    && _context.PatientAssignment
-                        .Where(pa => pa.PatientId == p.PatientId && pa.Active)
-                        .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
-                        .Count(u => u.RoleID == nurseRoleId) < 3)
-                .ToListAsync();
+            int nurseRoleId = 3; // Assuming 3 is the RoleID for Nurse
+            int doctorRoleId = 6; // Assuming 6 is the RoleID for Doctor
+
+            // Get the list of assignable patients based on the role of the logged-in worker
+            IQueryable<Patient> assignablePatientsQuery = _context.Patient
+                .Where(p => !_context.PatientAssignment
+                    .Any(pa => pa.PatientId == p.PatientId && pa.WorkerId == workerId && pa.Active));
+
+            if (currentUser.RoleID == doctorRoleId)
+            {
+                // If the user is a doctor:
+                // 1. Ensure patients already have at least one nurse assigned.
+                // 2. Ensure no other doctor is assigned to the patient.
+
+                assignablePatientsQuery = assignablePatientsQuery
+                    .Where(p =>
+                        // Check that there is at least one active nurse assigned to the patient
+                        _context.PatientAssignment
+                            .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                            .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                            .Any(u => u.RoleID == nurseRoleId)
+                        &&
+                        // Check that there are no active doctors assigned to the patient
+                        !_context.PatientAssignment
+                            .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                            .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                            .Any(u => u.RoleID == doctorRoleId)
+                    );
+            }
+            else if (currentUser.RoleID == nurseRoleId)
+            {
+                // If the user is a nurse, apply only the nurse assignment limit constraint
+                assignablePatientsQuery = assignablePatientsQuery
+                    .Where(p =>
+                        // Ensure fewer than 3 active nurses are assigned to the patient
+                        _context.PatientAssignment
+                            .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                            .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                            .Count(u => u.RoleID == nurseRoleId) < 3
+                    );
+            }
+
+            // Execute the query and convert to a list
+            var assignablePatients = await assignablePatientsQuery.ToListAsync();
 
             return View(assignablePatients);
         }
+
 
 
 
