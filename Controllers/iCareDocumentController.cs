@@ -35,10 +35,49 @@ namespace iCareWebApplication.Controllers
         // GET: iCareDocument/CreateDocument
         public IActionResult CreateDocument()
         {
-            ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name");
-            ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
+            if (!User.Identity.IsAuthenticated)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Retrieve the current user's ID from the claims (ensure it exists)
+            var userIdClaim = User.FindFirst("UserId");
+            if (userIdClaim == null)
+            {
+                // Handle case where user is not found in the claim (e.g., not authenticated properly)
+                return RedirectToAction("Login", "Account");
+            }
+
+            int currentUserId;
+            if (!int.TryParse(userIdClaim.Value, out currentUserId))
+            {
+                // Handle error if the UserId claim is invalid
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Get the patient assignments for the current user
+            var assignedPatientIds = _context.PatientAssignment
+                                              .Where(pa => pa.WorkerId == currentUserId && pa.Active)
+                                              .Select(pa => pa.PatientId)
+                                              .ToList();
+
+            // Fetch patients that are assigned to the current user
+            var patients = _context.Patient
+                                   .Where(p => assignedPatientIds.Contains(p.PatientId))
+                                   .Select(p => new SelectListItem
+                                   {
+                                       Value = p.PatientId.ToString(),
+                                       Text = p.Name
+                                   })
+                                   .ToList();
+
+            // Pass the list of assigned patients to the view
+            ViewBag.Patients = patients;
+
             return View();
         }
+
+
 
         // POST: iCareDocument/RegisterDocument
         [HttpPost]
