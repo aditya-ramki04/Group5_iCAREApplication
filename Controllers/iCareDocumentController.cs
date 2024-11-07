@@ -35,10 +35,28 @@ namespace iCareWebApplication.Controllers
         // GET: iCareDocument/CreateDocument
         public IActionResult CreateDocument()
         {
-            ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name");
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
+            // Perform a join between PatientAssignment and Patient to get assigned patients for the current user
+            var assignedPatients = _context.PatientAssignment
+                .Where(pa => pa.WorkerId == currentUserId && pa.Active) // Only active assignments
+                .Join(_context.Patient,
+                      pa => pa.PatientId,
+                      p => p.PatientId,
+                      (pa, p) => p) // Select the Patient entity from the join result
+                .ToList();
+
+            // Populate ViewBag with the filtered patient list
+            ViewBag.Patients = new SelectList(assignedPatients, "PatientId", "Name");
             ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
+
             return View();
         }
+
 
         // POST: iCareDocument/RegisterDocument
         [HttpPost]
@@ -160,13 +178,29 @@ namespace iCareWebApplication.Controllers
         // Get: iCareDocument/EditDocument/5
         public async Task<IActionResult> EditDocument(int id)
         {
+            int? currentUserId = HttpContext.Session.GetInt32("UserId");
+            if (currentUserId == null)
+            {
+                return RedirectToAction("Login", "Account");
+            }
+
             var document = await _context.iCareDocuments.FindAsync(id);
             if (document == null)
             {
                 return NotFound();
             }
 
-            ViewBag.Patients = new SelectList(_context.Patient, "PatientId", "Name", document.PatientId);
+            // Perform a join between PatientAssignment and Patient to get assigned patients for the current user
+            var assignedPatients = await _context.PatientAssignment
+                .Where(pa => pa.WorkerId == currentUserId && pa.Active) // Only active assignments
+                .Join(_context.Patient,
+                      pa => pa.PatientId,
+                      p => p.PatientId,
+                      (pa, p) => p) // Select the Patient entity from the join result
+                .ToListAsync();
+
+            // Populate ViewBag with the filtered patient list
+            ViewBag.Patients = new SelectList(assignedPatients, "PatientId", "Name", document.PatientId);
             ViewBag.Drugs = _context.Drugs.Select(d => new { d.DrugId, d.DrugName }).ToList();
 
             var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", id.ToString());
@@ -178,6 +212,8 @@ namespace iCareWebApplication.Controllers
 
             return View(document);
         }
+
+
 
         // POST: iCareDocument/EditDocument/5
         [HttpPost]
