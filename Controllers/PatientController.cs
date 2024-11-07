@@ -114,13 +114,24 @@ namespace iCareWebApplication.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Get list of patients who are either not assigned or not actively assigned to the logged-in worker
+            // Define the role ID for nurses
+            int nurseRoleId = 3; // Assuming 3 is the RoleID for Nurse in your database
+
+            // Get the list of assignable patients based on:
+            // 1. Patients who are either not assigned or not actively assigned to the current worker.
+            // 2. Patients who have fewer than 3 active nurses assigned.
             var assignablePatients = await _context.Patient
-                .Where(p => !_context.PatientAssignment.Any(pa => pa.PatientId == p.PatientId && pa.WorkerId == workerId && pa.Active))
+                .Where(p => !_context.PatientAssignment.Any(pa => pa.PatientId == p.PatientId && pa.WorkerId == workerId && pa.Active)
+                    && _context.PatientAssignment
+                        .Where(pa => pa.PatientId == p.PatientId && pa.Active)
+                        .Join(_context.User, pa => pa.WorkerId, u => u.UserId, (pa, u) => u)
+                        .Count(u => u.RoleID == nurseRoleId) < 3)
                 .ToListAsync();
 
             return View(assignablePatients);
         }
+
+
 
         public async Task<IActionResult> AssignByGeoLocation(int? geoCodeId)
         {
