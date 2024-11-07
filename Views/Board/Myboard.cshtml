@@ -13,6 +13,7 @@
             <th>Name</th>
             <th>Date of Birth</th>
             <th>GeoCodeId</th>
+            <th>Treatment Record</th>
             <!-- Add more columns as needed -->
         </tr>
     </thead>
@@ -24,7 +25,9 @@
                 <td>@patient.Name</td>
                 <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>
                 <td>@patient.GeoCodeId</td>
-
+                <td>
+                      <a asp-controller="PatientTreatment" asp-action="Index" asp-route-patientId="@patient.PatientId" class="btn btn-info">View Treatments</a>
+                </td>
             </tr>
         }
     </tbody>
