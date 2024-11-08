@@ -2,25 +2,16 @@
 using iCareWebApplication.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks;
-using System.IO;
-using Microsoft.AspNetCore.Http;
-using iTextSharp.text;
-using iTextSharp.text.pdf;
-using Newtonsoft.Json;
-using Microsoft.AspNetCore.Hosting;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Http;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Hosting;
 
 namespace iCareWebApplication.Controllers
 {
@@ -151,6 +142,25 @@ namespace iCareWebApplication.Controllers
 
                 return File(ms.ToArray(), "application/pdf", $"Treatment_{id}.pdf");
             }
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteSelected(List<int> selectedTreatments, int patientId)
+        {
+            if (selectedTreatments != null && selectedTreatments.Any())
+            {
+                var treatmentsToDelete = await _context.PatientTreatment
+                    .Where(t => selectedTreatments.Contains(t.PatientTreatmentId))
+                    .ToListAsync();
+
+                _context.PatientTreatment.RemoveRange(treatmentsToDelete);
+                await _context.SaveChangesAsync();
+
+                TempData["Message"] = $"{treatmentsToDelete.Count} treatment(s) have been deleted.";
+            }
+
+            return RedirectToAction(nameof(Index), new { patientId });
         }
     }
 }

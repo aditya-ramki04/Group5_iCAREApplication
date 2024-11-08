@@ -6,35 +6,79 @@
 
 <h2>Patient Treatments</h2>
 
-<a asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary mb-3">Add New Treatment</a>
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Message"]
+    </div>
+}
 
-<table class="table">
-    <thead>
-        <tr>
-            <th>Treatment ID</th>
-            <th>Description</th>
-            <th>Treatment Date</th>
-            <th>Worker ID</th>
-            <th>Actions</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var treatment in Model)
-        {
+<div class="d-flex justify-content-between mb-3">
+    <a asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary">Add New Treatment</a>
+
+    <form asp-action="DeleteSelected" method="post" id="deleteForm" class="d-inline">
+        <input type="hidden" name="patientId" value="@ViewBag.PatientId" />
+        <button type="submit" class="btn btn-danger" id="deleteSelectedBtn" disabled onclick="return confirm('Are you sure you want to delete the selected treatments?');">
+            Delete Selected
+        </button>
+    </form>
+</div>
+
+<form id="treatmentsForm">
+    <table class="table">
+        <thead>
             <tr>
-                <td>@treatment.PatientTreatmentId</td>
-                <td>@treatment.Description</td>
-                <td>@treatment.TreatmentDate.ToString("MM/dd/yyyy")</td>
-                <td>@treatment.WorkerId</td>
-                <td>
-                    <a asp-action="DownloadPdf" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-info">Download</a>
-                </td>
+                <th>
+                    <input type="checkbox" id="selectAll" />
+                </th>
+                <th>Treatment ID</th>
+                <th>Description</th>
+                <th>Treatment Date</th>
+                <th>Worker ID</th>
+                <th>Actions</th>
             </tr>
-        }
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+            @foreach (var treatment in Model)
+            {
+                <tr>
+                    <td>
+                        <input type="checkbox" name="selectedTreatments" value="@treatment.PatientTreatmentId" class="treatment-checkbox" form="deleteForm" />
+                    </td>
+                    <td>@treatment.PatientTreatmentId</td>
+                    <td>@treatment.Description</td>
+                    <td>@treatment.TreatmentDate.ToString("MM/dd/yyyy")</td>
+                    <td>@treatment.WorkerId</td>
+                    <td>
+                        <a asp-action="DownloadPdf" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-info">Download PDF</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</form>
 
 @if (!Model.Any())
 {
     <p>No treatments found for this patient.</p>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#selectAll').click(function () {
+                $('.treatment-checkbox').prop('checked', this.checked);
+                updateDeleteButtonState();
+            });
+
+            $('.treatment-checkbox').click(function () {
+                updateDeleteButtonState();
+            });
+
+            function updateDeleteButtonState() {
+                var checkedBoxes = $('.treatment-checkbox:checked').length;
+                $('#deleteSelectedBtn').prop('disabled', checkedBoxes === 0);
+            }
+        });
+    </script>
 }

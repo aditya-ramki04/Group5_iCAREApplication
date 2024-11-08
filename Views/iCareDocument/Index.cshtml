@@ -1,5 +1,4 @@
-﻿﻿
-@model IEnumerable<iCareWebApplication.Models.iCareDocument>
+﻿@model IEnumerable<iCareWebApplication.Models.iCareDocument>
 
 @{
     ViewData["Title"] = "Documents List";
@@ -8,9 +7,9 @@
 <h2>Documents List</h2>
 
 <!-- Action Buttons -->
-<div class="mb-2">
+<div class="d-flex justify-content-between mb-3">
     <a asp-action="CreateDocument" class="btn btn-primary">Create Document</a>
-    <button type="submit" form="documentForm" class="btn btn-danger">Delete Selected</button>
+    <button type="submit" form="documentForm" class="btn btn-danger" id="deleteSelectedBtn" disabled>Delete Selected</button>
 </div>
 
 <!-- Document List Form to handle the checkbox selection -->
@@ -18,7 +17,9 @@
     <table class="table mt-4">
         <thead>
             <tr>
-                <th>Select</th>
+                <th>
+                    <input type="checkbox" id="selectAll" />
+                </th>
                 <th>Document ID</th>
                 <th>Patient ID</th>
                 <th>Description</th>
@@ -35,7 +36,7 @@
             {
                 <tr>
                     <td>
-                        <input type="checkbox" name="selectedDocumentIds" value="@doc.iCareDocumentId" />
+                        <input type="checkbox" name="selectedDocumentIds" value="@doc.iCareDocumentId" class="document-checkbox" />
                     </td>
                     <td>@doc.iCareDocumentId</td>
                     <td>@doc.PatientId</td>
@@ -57,13 +58,40 @@
 
 @section Scripts {
     <script>
-        document.getElementById("documentForm").onsubmit = function () {
-            const selectedCount = document.querySelectorAll('input[name="selectedDocumentIds"]:checked').length;
-            if (selectedCount === 0) {
-                alert("No documents selected for deletion.");
-                return false;
+        document.addEventListener('DOMContentLoaded', function() {
+            const selectAllCheckbox = document.getElementById('selectAll');
+            const documentCheckboxes = document.querySelectorAll('.document-checkbox');
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
+            const documentForm = document.getElementById('documentForm');
+
+            function updateDeleteButtonState() {
+                const checkedBoxes = document.querySelectorAll('.document-checkbox:checked').length;
+                deleteSelectedBtn.disabled = checkedBoxes === 0;
             }
-            return confirm('Are you sure you want to delete the selected documents?');
-        };
+
+            selectAllCheckbox.addEventListener('change', function() {
+                documentCheckboxes.forEach(checkbox => {
+                    checkbox.checked = this.checked;
+                });
+                updateDeleteButtonState();
+            });
+
+            documentCheckboxes.forEach(checkbox => {
+                checkbox.addEventListener('change', updateDeleteButtonState);
+            });
+
+            documentForm.onsubmit = function(e) {
+                const selectedCount = document.querySelectorAll('.document-checkbox:checked').length;
+                if (selectedCount === 0) {
+                    e.preventDefault();
+                    alert("No documents selected for deletion.");
+                    return false;
+                }
+                return confirm('Are you sure you want to delete the selected documents?');
+            };
+
+            // Initial update of delete button state
+            updateDeleteButtonState();
+        });
     </script>
 }
