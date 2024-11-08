@@ -6,15 +6,16 @@
 
 <h2>Patient Treatments</h2>
 
-<a asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary">Add New Treatment</a>
+<a asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary mb-3">Add New Treatment</a>
 
-<table class="table mt-3">
+<table class="table">
     <thead>
         <tr>
-            <th>Treatments</th>
+            <th>Treatment ID</th>
             <th>Description</th>
             <th>Treatment Date</th>
-            <th>Worker Name</th>
+            <th>Worker ID</th>
+            <th>Actions</th>
         </tr>
     </thead>
     <tbody>
@@ -25,7 +26,15 @@
                 <td>@treatment.Description</td>
                 <td>@treatment.TreatmentDate.ToString("MM/dd/yyyy")</td>
                 <td>@treatment.WorkerId</td>
+                <td>
+                    <a asp-action="DownloadPdf" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-info">Download</a>
+                </td>
             </tr>
         }
     </tbody>
 </table>
+
+@if (!Model.Any())
+{
+    <p>No treatments found for this patient.</p>
+}
