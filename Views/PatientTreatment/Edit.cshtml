@@ -44,25 +44,13 @@
 
             @if (imagePaths != null && imagePaths.Any())
             {
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Image Name</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var imagePath in imagePaths)
-                        {
-                            <tr>
-                                <td>@imagePath</td>
-                                <td>
-                                    <input type="checkbox" name="removeImages" value="@imagePath" />
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                foreach (var imagePath in imagePaths)
+                {
+                    <div>
+                        <span>@imagePath</span>
+                        <input type="checkbox" name="removeImages" value="@imagePath" /> Remove
+                    </div>
+                }
             }
             else
             {
