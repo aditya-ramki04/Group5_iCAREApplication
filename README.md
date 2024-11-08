@@ -1,6 +1,4 @@
 iCareWebApplication Setup Guide
-This guide provides step-by-step instructions to set up and run the iCareWebApplication project on your local machine. By the end, you’ll have the project running with the correct MySQL database schema.
-
 Prerequisites
 ----------------
 .NET Core SDK (version compatible with the project, e.g., .NET 6.0 or .NET 5.0)
