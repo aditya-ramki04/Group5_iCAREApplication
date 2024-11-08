@@ -1,26 +1,38 @@
 ﻿@{
+    // Set the title of the page to "Login" which will be reflected in the browser tab
     ViewData["Title"] = "Login";
+
+    // Retrieve the RoleId from ViewData if it exists, and cast it to an integer. If it's null, it will be null.
     var roleId = ViewData["RoleId"] as int?;
 }
 
-
+<!-- The header of the login page -->
 <h1>Login</h1>
 
+<!-- Check if there's an error message stored in ViewData and display it -->
 @if (ViewData["Error"] != null)
 {
+    // If an error exists, display it in a bootstrap-styled alert box with the "danger" class
     <div class="alert alert-danger">@ViewData["Error"]</div>
 }
 
+<!-- Form for logging in, it will submit the data via POST to the "Login" action in the "Account" controller -->
 <form method="post" asp-action="Login" asp-controller="Account">
+
+    <!-- Username input field -->
     <div class="form-group">
         <label for="username">Username</label>
+        <!-- Input field for the username, with required validation -->
         <input type="text" id="username" name="username" class="form-control" required />
     </div>
 
+    <!-- Password input field -->
     <div class="form-group">
         <label for="password">Password</label>
+        <!-- Input field for the password, with required validation -->
         <input type="password" id="password" name="password" class="form-control" required />
     </div>
 
+    <!-- Submit button for the login form -->
     <button type="submit" class="btn btn-primary">Login</button>
 </form>

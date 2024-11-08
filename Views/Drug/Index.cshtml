@@ -1,25 +1,35 @@
-﻿@model IEnumerable<iCareWebApplication.Models.Drug>
+﻿@model IEnumerable<iCareWebApplication.Models.Drug> 
 
 @{
+    // Set the title of the page to "Role List" which will be reflected in the browser tab
     ViewData["Title"] = "Role List";
 }
 
+<!-- The header of the page displaying the title "Drug List" -->
 <h2>Drug List</h2>
 
+<!-- Table to display the list of drugs -->
 <table class="table">
+    <!-- Table header with column names -->
     <thead>
         <tr>
-            <th>Drug ID</th>
-            <th>DrugName</th>
-            <th>Description</th>
+            <th>Drug ID</th> <!-- Column for Drug ID -->
+            <th>DrugName</th> <!-- Column for Drug Name -->
+            <th>Description</th> <!-- Column for Drug Description -->
         </tr>
     </thead>
+    
+    <!-- Table body where drug data will be displayed -->
     <tbody>
         @foreach (var role in Model)
         {
+            <!-- Display each drug's information in a new row -->
             <tr>
+                <!-- Display the drug's ID -->
                 <td>@role.DrugId</td>
+                <!-- Display the drug's name -->
                 <td>@role.DrugName</td>
+                <!-- Display the drug's description -->
                 <td>@role.Description</td>
             </tr>
         }

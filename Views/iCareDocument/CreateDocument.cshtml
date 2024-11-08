@@ -1,55 +1,90 @@
 ﻿@model iCareWebApplication.Models.iCareDocument
 
+<!-- Heading for the page indicating it's for creating a new document -->
 <h2>Create New Document</h2>
 
+<!-- Form for submitting a new document. It posts data to the "RegisterDocument" action -->
 <form asp-action="RegisterDocument" method="post" enctype="multipart/form-data">
+
+    <!-- Select patient dropdown -->
     <div class="form-group">
         <label for="PatientId">Select Patient</label>
+        <!-- Dropdown populated with patients from ViewBag.Patients -->
         <select asp-for="PatientId" asp-items="ViewBag.Patients" class="form-control" required>
-            <option value="">-- Select Patient --</option>
+            <option value="">-- Select Patient --</option> <!-- Default option -->
         </select>
     </div>
+
+    <!-- File path input field -->
     <div class="form-group">
         <label for="FilePath">File Path</label>
+        <!-- Text input for file path -->
         <input asp-for="FilePath" type="text" class="form-control" required />
     </div>
+
+    <!-- File type input field -->
     <div class="form-group">
         <label for="FileType">File Type</label>
+        <!-- Text input for file type (e.g., PDF, DOCX) -->
         <input asp-for="FileType" type="text" class="form-control" required />
     </div>
+
+    <!-- Created by input field -->
     <div class="form-group">
         <label for="CreatedBy">Created By</label>
+        <!-- Numeric input for the ID of the person who created the document -->
         <input asp-for="CreatedBy" type="number" class="form-control" required />
     </div>
+
+    <!-- Creation date input field -->
     <div class="form-group">
         <label for="CreationDate">Creation Date</label>
+        <!-- Input for selecting a date and time of creation -->
         <input asp-for="CreationDate" type="datetime-local" class="form-control" required />
     </div>
+
+    <!-- Last modified date input field -->
     <div class="form-group">
         <label for="LastModified">Last Modified Date</label>
+        <!-- Input for selecting a date and time of the last modification -->
         <input asp-for="LastModified" type="datetime-local" class="form-control" required />
     </div>
+
+    <!-- Modified by input field -->
     <div class="form-group">
         <label for="ModifiedBy">Modified By</label>
+        <!-- Numeric input for the ID of the person who modified the document -->
         <input asp-for="ModifiedBy" type="number" class="form-control" required />
     </div>
+
+    <!-- Description textarea input field -->
     <div class="form-group">
         <label for="Description">Description</label>
+        <!-- Textarea input for a brief description of the document -->
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
     </div>
+
+    <!-- Drug selection dropdown -->
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
+        <!-- Dropdown populated with drugs from ViewBag.Drugs -->
         <select id="drugSelect" name="DrugId" class="form-control">
-            <option value="" selected disabled>Select a drug...</option>
+            <option value="" selected disabled>Select a drug...</option> <!-- Default option -->
             @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
             {
+                <!-- Dynamically populated options for drugs -->
                 <option value="@drug.DrugId">@drug.DrugName</option>
             }
         </select>
     </div>
+
+    <!-- Image upload input field -->
     <div class="form-group">
         <label for="uploadingImage">Upload Images:</label>
+        <!-- File input for selecting multiple image files -->
         <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple />
     </div>
+
+    <!-- Submit button to create the document -->
     <button type="submit" class="btn btn-primary">Create Document</button>
 </form>

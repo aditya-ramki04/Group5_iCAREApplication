@@ -1,79 +1,122 @@
 ﻿@model iCareWebApplication.Models.iCareDocument
 
+<!-- Heading for the page indicating it's for editing an existing document -->
 <h2>Edit Document</h2>
 
+<!-- Form for submitting updates to the document. It posts data to the "EditDocument" action -->
 <form asp-action="EditDocument" method="post" enctype="multipart/form-data">
+
+    <!-- Hidden field to store the document's ID -->
     <input type="hidden" asp-for="iCareDocumentId" />
+
+    <!-- Select patient dropdown -->
     <div class="form-group">
         <label for="PatientId">Select Patient</label>
+        <!-- Dropdown populated with patients from ViewBag.Patients -->
         <select asp-for="PatientId" asp-items="ViewBag.Patients" class="form-control" required>
-            <option value="">-- Select Patient --</option>
+            <option value="">-- Select Patient --</option> <!-- Default option -->
         </select>
     </div>
+
+    <!-- File path input field -->
     <div class="form-group">
         <label for="FilePath">File Path</label>
+        <!-- Text input for file path (editable) -->
         <input asp-for="FilePath" type="text" class="form-control" required />
     </div>
+
+    <!-- File type input field -->
     <div class="form-group">
         <label for="FileType">File Type</label>
+        <!-- Text input for file type (editable) -->
         <input asp-for="FileType" type="text" class="form-control" required />
     </div>
+
+    <!-- Created by input field (readonly) -->
     <div class="form-group">
         <label for="CreatedBy">Created By</label>
+        <!-- Numeric input for the ID of the person who created the document, not editable -->
         <input asp-for="CreatedBy" type="number" class="form-control" required readonly />
     </div>
+
+    <!-- Creation date input field (readonly) -->
     <div class="form-group">
         <label for="CreationDate">Creation Date</label>
+        <!-- Input for selecting the date and time of creation, not editable -->
         <input asp-for="CreationDate" type="datetime-local" class="form-control" required readonly />
     </div>
+
+    <!-- Last modified date input field (editable) -->
     <div class="form-group">
         <label for="LastModified">Last Modified Date</label>
+        <!-- Input for selecting the date and time of the last modification (editable) -->
         <input asp-for="LastModified" type="datetime-local" class="form-control" required />
     </div>
+
+    <!-- Modified by input field -->
     <div class="form-group">
         <label for="ModifiedBy">Modified By</label>
+        <!-- Numeric input for the ID of the person who modified the document (editable) -->
         <input asp-for="ModifiedBy" type="number" class="form-control" required />
     </div>
+
+    <!-- Description textarea input field -->
     <div class="form-group">
         <label for="Description">Description</label>
+        <!-- Textarea input for a brief description of the document -->
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
     </div>
+
+    <!-- Drug selection dropdown -->
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
+        <!-- Dropdown populated with drugs from ViewBag.Drugs -->
         <select id="drugSelect" name="DrugId" class="form-control">
-            <option value="" selected disabled>Select a drug...</option>
+            <option value="" selected disabled>Select a drug...</option> <!-- Default option -->
             @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
             {
+                <!-- Dynamically populated options for drugs -->
                 <option value="@drug.DrugId">@drug.DrugName</option>
             }
         </select>
     </div>
+
+    <!-- Displaying uploaded images and providing an option to remove them -->
     <div class="form-group">
         <label>Uploaded Images:</label>
         <div>
             @{
+                // Retrieving the list of image paths from ViewBag.ImagePaths
                 var imagePaths = ViewBag.ImagePaths as List<string>;
             }
 
             @if (imagePaths != null && imagePaths.Any())
             {
+                // If images are uploaded, display each image with a checkbox to remove
                 foreach (var imagePath in imagePaths)
                 {
                     <div>
-                        <span>@imagePath</span>
+                        <span>@imagePath</span> <!-- Display image path -->
+                        <!-- Checkbox to remove image -->
                         <input type="checkbox" name="removeImages" value="@imagePath" /> Remove
                     </div>
                 }
             }
             else
             {
+                <!-- If no images are uploaded, display a message -->
                 <p>No images uploaded.</p>
             }
         </div>
     </div>
+
+    <!-- Image upload input field -->
     <div class="form-group">
         <label for="uploadingImage">Upload Images:</label>
+        <!-- File input for selecting multiple image files -->
         <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple />
     </div>
+
+    <!-- Submit button to update the document -->
     <button type="submit" class="btn btn-primary">Update Document</button>
 </form>

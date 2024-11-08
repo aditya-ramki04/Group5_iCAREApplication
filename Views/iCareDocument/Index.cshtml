@@ -6,20 +6,25 @@
 
 <h2>Documents List</h2>
 
-<!-- Action Buttons -->
+<!-- Action Buttons Section -->
 <div class="d-flex justify-content-between mb-3">
+    <!-- Button to navigate to the 'Create Document' page -->
     <a asp-action="CreateDocument" class="btn btn-primary">Create Document</a>
+
+    <!-- Button to delete selected documents (disabled by default) -->
     <button type="submit" form="documentForm" class="btn btn-danger" id="deleteSelectedBtn" disabled>Delete Selected</button>
 </div>
 
-<!-- Document List Form to handle the checkbox selection -->
+<!-- Document List Form that handles the checkbox selection for deleting -->
 <form id="documentForm" asp-action="DeleteSelected" method="post">
     <table class="table mt-4">
         <thead>
             <tr>
+                <!-- Checkbox to select all documents -->
                 <th>
                     <input type="checkbox" id="selectAll" />
                 </th>
+                <!-- Table column headers -->
                 <th>Document ID</th>
                 <th>Patient ID</th>
                 <th>Description</th>
@@ -32,12 +37,15 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each document and display its data in a table row -->
             @foreach (var doc in Model)
             {
                 <tr>
                     <td>
+                        <!-- Checkbox for each document to allow selection for deletion -->
                         <input type="checkbox" name="selectedDocumentIds" value="@doc.iCareDocumentId" class="document-checkbox" />
                     </td>
+                    <!-- Display the document's properties in corresponding table columns -->
                     <td>@doc.iCareDocumentId</td>
                     <td>@doc.PatientId</td>
                     <td>@doc.Description</td>
@@ -47,6 +55,7 @@
                     <td>@doc.LastModified</td>
                     <td>@doc.ModifiedBy</td>
                     <td>
+                        <!-- Action buttons: Edit and Download -->
                         <a asp-action="EditDocument" asp-route-id="@doc.iCareDocumentId" class="btn btn-warning">Edit</a>
                         <a asp-action="Download" asp-route-id="@doc.iCareDocumentId" class="btn btn-secondary">Download</a>
                     </td>
@@ -58,39 +67,44 @@
 
 @section Scripts {
     <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const selectAllCheckbox = document.getElementById('selectAll');
-            const documentCheckboxes = document.querySelectorAll('.document-checkbox');
-            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn');
-            const documentForm = document.getElementById('documentForm');
+        // Ensure the DOM is fully loaded before running the script
+        document.addEventListener('DOMContentLoaded', function () {
+            const selectAllCheckbox = document.getElementById('selectAll'); // 'Select All' checkbox
+            const documentCheckboxes = document.querySelectorAll('.document-checkbox'); // All individual document checkboxes
+            const deleteSelectedBtn = document.getElementById('deleteSelectedBtn'); // Delete button
+            const documentForm = document.getElementById('documentForm'); // The form element for document deletion
 
+            // Function to enable/disable the delete button based on the number of selected documents
             function updateDeleteButtonState() {
-                const checkedBoxes = document.querySelectorAll('.document-checkbox:checked').length;
-                deleteSelectedBtn.disabled = checkedBoxes === 0;
+                const checkedBoxes = document.querySelectorAll('.document-checkbox:checked').length; // Count selected checkboxes
+                deleteSelectedBtn.disabled = checkedBoxes === 0; // Disable delete button if no documents are selected
             }
 
-            selectAllCheckbox.addEventListener('change', function() {
+            // Event listener for the 'Select All' checkbox to check/uncheck all individual checkboxes
+            selectAllCheckbox.addEventListener('change', function () {
                 documentCheckboxes.forEach(checkbox => {
-                    checkbox.checked = this.checked;
+                    checkbox.checked = this.checked; // Check/uncheck each document checkbox
                 });
-                updateDeleteButtonState();
+                updateDeleteButtonState(); // Update the delete button state based on selection
             });
 
+            // Event listener for individual document checkboxes to update the delete button state
             documentCheckboxes.forEach(checkbox => {
-                checkbox.addEventListener('change', updateDeleteButtonState);
+                checkbox.addEventListener('change', updateDeleteButtonState); // Update state on change
             });
 
-            documentForm.onsubmit = function(e) {
-                const selectedCount = document.querySelectorAll('.document-checkbox:checked').length;
+            // Handle form submission for deleting selected documents
+            documentForm.onsubmit = function (e) {
+                const selectedCount = document.querySelectorAll('.document-checkbox:checked').length; // Count selected checkboxes
                 if (selectedCount === 0) {
-                    e.preventDefault();
+                    e.preventDefault(); // Prevent form submission if no checkboxes are selected
                     alert("No documents selected for deletion.");
-                    return false;
+                    return false; // Return false to stop form submission
                 }
-                return confirm('Are you sure you want to delete the selected documents?');
+                return confirm('Are you sure you want to delete the selected documents?'); // Show confirmation prompt before submitting
             };
 
-            // Initial update of delete button state
+            // Initial update of delete button state (to handle pre-selected checkboxes)
             updateDeleteButtonState();
         });
     </script>

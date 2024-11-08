@@ -1,38 +1,54 @@
 ﻿@{
+    // Set the title of the page to "Register" which will be reflected in the browser tab
     ViewData["Title"] = "Register";
 }
 
+<!-- The header of the page displaying the title "Register" -->
 <h1>Register</h1>
 
+<!-- Form for user registration, it will submit the data via POST to the "Register" action in the "Account" controller -->
 <form method="post" asp-action="Register" asp-controller="Account">
+
+    <!-- Full Name input field -->
     <div class="form-group">
         <label for="fullName">Full Name</label>
+        <!-- Input field for the full name, with required validation -->
         <input type="text" id="fullName" name="FullName" class="form-control" required />
     </div>
 
+    <!-- Email input field -->
     <div class="form-group">
         <label for="email">Email</label>
+        <!-- Input field for the email, with required validation and email-specific validation -->
         <input type="email" id="email" name="Email" class="form-control" required />
     </div>
 
+    <!-- Username input field -->
     <div class="form-group">
         <label for="username">Username</label>
+        <!-- Input field for the username, with required validation -->
         <input type="text" id="username" name="Username" class="form-control" required />
     </div>
 
+    <!-- Password input field -->
     <div class="form-group">
         <label for="password">Password</label>
+        <!-- Input field for the password, with required validation -->
         <input type="password" id="password" name="Password" class="form-control" required />
     </div>
 
+    <!-- Employee Type selection dropdown -->
     <div class="form-group">
         <label for="employeeType">Choose Employee</label>
+        <!-- Dropdown for selecting the type of employee, with required validation -->
         <select id="employeeType" name="EmployeeType" class="form-control" required>
             <option value="">Select an option</option>
+            <!-- Options for employee type: Nurse or Doctor -->
             <option value="Nurse">Nurse</option>
             <option value="Doctor">Doctor</option>
         </select>
     </div>
 
+    <!-- Submit button for the registration form -->
     <button type="submit" class="btn btn-primary">Register</button>
 </form>

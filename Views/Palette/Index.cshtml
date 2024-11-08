@@ -6,16 +6,20 @@
 
 <h2>Role List</h2>
 
+<!-- Table to display the list of roles -->
 <table class="table">
     <thead>
         <tr>
+            <!-- Table header for Role ID column -->
             <th>Role ID</th>
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each role in the model and display the Role ID -->
         @foreach (var role in Model)
         {
             <tr>
+                <!-- Display the Role ID for each role in a table row -->
                 <td>@role.iCareDocumentId</td>
             </tr>
         }
@@ -23,5 +27,6 @@
 </table>
 
 <p>
+    <!-- Link to navigate to the "Create" action for adding a new role -->
     <a asp-action="Create" class="btn btn-primary">Add New Role</a>
 </p>

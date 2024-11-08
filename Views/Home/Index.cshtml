@@ -1,36 +1,51 @@
 ﻿@{
+    // Set the title of the page to "Home" which will be displayed in the browser tab or window
     ViewData["Title"] = "Home";
 }
 
 <!DOCTYPE html>
+ <!-- Defines the document type as HTML5 -->
 <html lang="en">
+ <!-- Sets the language of the document to English -->
 <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" /> <!-- Specifies the character encoding for the document -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <!-- Makes the page responsive on different devices -->
+    <!-- Title of the page, dynamically set from ViewData -->
     <title>@ViewData["Title"] - iCareWebApplication</title>
+    <!-- Link to the external CSS file for styling the home page -->
     <link rel="stylesheet" href="~/css/home.css" />
 </head>
 <body>
 
+    <!-- Hero section of the website (main introductory section) -->
     <div class="hero-section">
         <div class="container">
+            <!-- Container to center the content -->
+            <!-- Main heading for the page -->
             <h1>Welcome to Group5_iCARE</h1>
+            <!-- Subtitle for the hero section -->
             <p>Your health is our priority. Explore our personalized healthcare services.</p>
         </div>
     </div>
 
+    <!-- Services section where different services offered by the organization are displayed -->
     <div class="services-section">
         <div class="container">
+            <!-- Heading for the services section -->
             <h2>Our Services</h2>
+            <!-- A container for listing the services -->
             <div class="service-list">
+                <!-- Individual service item -->
                 <div class="service-item">
                     <h3>General Consultation</h3>
                     <p>Our experts are here to provide you with the best medical advice.</p>
                 </div>
+                <!-- Another service item -->
                 <div class="service-item">
                     <h3>Specialized Care</h3>
                     <p>We offer specialized medical care tailored to your needs.</p>
                 </div>
+                <!-- Another service item -->
                 <div class="service-item">
                     <h3>Emergency Services</h3>
                     <p>Our emergency department is available 24/7 for urgent cases.</p>
@@ -39,12 +54,17 @@
         </div>
     </div>
 
+    <!-- Contact section with details of how users can get in touch -->
     <div class="contact-section">
         <div class="container">
+            <!-- Heading for the contact section -->
             <h2>Contact Us</h2>
+            <!-- Description for how users can contact -->
             <p>Have questions? Reach out to our specialists for expert advice or care. Availability Monday - Friday:</p>
 
+            <!-- List of doctors available for consultation -->
             <div class="doctor-list">
+                <!-- Each doctor listed with their information -->
                 <div class="doctor-item">
                     <h3>Dr. Nitin Chava</h3>
                     <p>Specialist: Cardiology</p>
@@ -71,10 +91,10 @@
                 </div>
             </div>
 
+            <!-- General inquiry contact information -->
             <p>For general inquiries, contact us at info@icare.com or call us at (123) 456-7890.</p>
         </div>
     </div>
-
 
 </body>
 </html>

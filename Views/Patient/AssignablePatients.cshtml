@@ -6,11 +6,13 @@
 
 <h2>Assignable Patients</h2>
 
+<!-- Filter form to select state (GeoCodeId) -->
 <form asp-action="AssignByGeoLocation" method="get">
     <label for="geoCodeId">Filter by State:</label>
     <select id="geoCodeId" name="geoCodeId" class="form-select" onchange="this.form.submit()">
         <option value="">All</option>
         @{
+            // List of U.S. states to filter by
             string[] states = new string[] {
         "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
         "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
@@ -20,6 +22,7 @@
         "Wisconsin", "Wyoming"
         };
         }
+        <!-- Loop through the states and generate options for the dropdown -->
         @for (int i = 0; i < states.Length; i++)
         {
             <option value="@(i + 1)">@states[i] - @(i + 1)</option>
@@ -27,10 +30,13 @@
     </select>
 </form>
 
+<!-- Form to assign selected patients -->
 <form method="post" asp-action="AssignPatients" asp-controller="PatientAssignment">
+    <!-- Table to display the list of patients -->
     <table class="table">
         <thead>
             <tr>
+                <!-- Column headers for the table -->
                 <th>Select</th>
                 <th>Patient ID</th>
                 <th>Name</th>
@@ -39,20 +45,27 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each patient in the model and display their data in the table -->
             @foreach (var patient in Model)
             {
                 <tr>
+                    <!-- Checkbox for selecting patients -->
                     <td>
                         <input type="checkbox" name="selectedPatients" value="@patient.PatientId" />
                     </td>
+                    <!-- Display the Patient ID -->
                     <td>@patient.PatientId</td>
+                    <!-- Display the Patient's Name -->
                     <td>@patient.Name</td>
+                    <!-- Display the Patient's Date of Birth, formatted as MM/dd/yyyy -->
                     <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>
+                    <!-- Display the Patient's GeoCodeId -->
                     <td>@patient.GeoCodeId</td>
                 </tr>
             }
         </tbody>
     </table>
 
+    <!-- Submit button to assign selected patients -->
     <button type="submit" class="btn btn-primary">Assign Selected Patients</button>
 </form>
