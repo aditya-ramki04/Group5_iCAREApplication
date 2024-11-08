@@ -1,6 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using iCareWebApplication.Data; 
-using iCareWebApplication.Models; 
+using iCareWebApplication.Data;
+using iCareWebApplication.Models;
 using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
@@ -11,12 +11,19 @@ namespace iCareWebApplication.Controllers
     {
         private readonly iCareContext _context;
 
+        /// Initializes a new instance of the AccountController class with the specified database context.
+        ///
+        /// Parameters:
+        ///   context - The database context (iCareContext) used to access the application's data.
         public AccountController(iCareContext context)
         {
             _context = context;
         }
 
-        // GET: /Account/Login
+        /// Displays the login view.
+        /// 
+        /// Returns:
+        ///   The login view with the current user's RoleId stored in ViewData.
         [HttpGet]
         public IActionResult Login()
         {
@@ -25,7 +32,15 @@ namespace iCareWebApplication.Controllers
             return View("Login");
         }
 
-        // POST: /Account/Login
+        /// Authenticates the user based on the provided username and password.
+        ///
+        /// Parameters:
+        ///   username - The username entered by the user.
+        ///   password - The password entered by the user.
+        ///
+        /// Returns:
+        ///   Redirects to the Home page if login is successful, or redisplays
+        ///   the login view with an error message if login fails.
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
@@ -33,14 +48,15 @@ namespace iCareWebApplication.Controllers
             var user = _context.User.FirstOrDefault(u => u.UserName == username);
 
             // Validate password (use hashing for production)
-            if (user != null && user.PasswordHash == password) 
+            if (user != null && user.PasswordHash == password)
             {
-                // Redirect to Home page if login is successful
+                // Get the role name for the logged-in user
                 var roleName = _context.Roles
-                .Where(r => r.RoleID == user.RoleID)
-                .Select(r => r.RoleName)
-                .FirstOrDefault();
+                    .Where(r => r.RoleID == user.RoleID)
+                    .Select(r => r.RoleName)
+                    .FirstOrDefault();
 
+                // Store user information in the session
                 HttpContext.Session.SetInt32("UserId", user.UserId);
                 HttpContext.Session.SetInt32("RoleId", user.RoleID);
                 HttpContext.Session.SetString("Username", user.UserName);
@@ -54,7 +70,11 @@ namespace iCareWebApplication.Controllers
             return View("Login");
         }
 
-        // GET: /Account/Register
+        /// Displays the registration view if the logged-in user has admin privileges.
+        ///
+        /// Returns:
+        ///   The registration view if the user is an admin, or redirects to the
+        ///   Home page otherwise.
         [HttpGet]
         public IActionResult Register()
         {
@@ -63,23 +83,32 @@ namespace iCareWebApplication.Controllers
             // Check if user is logged in and has admin privileges
             if (roleId == 1) // Admin role
             {
-                return View("Register"); // Show the registration view if user is an admin
+                return View("Register");
             }
 
-            // Redirect non-admin users to Home page
+            // Redirect non-admin users to the Home page
             return RedirectToAction("Index", "Home");
         }
 
-        // POST: /Account/Register
+        /// Registers a new user with the specified details, only accessible by admin users.
+        ///
+        /// Parameters:
+        ///   fullName - The full name of the new user.
+        ///   email - The email address of the new user.
+        ///   username - The username for the new account.
+        ///   password - The password for the new account.
+        ///   employeeType - The role type for the new user, determining RoleID.
+        ///
+        /// Returns:
+        ///   Redirects to the Home page upon successful registration, or displays
+        ///   an error on the registration view if input is invalid.
         [HttpPost]
         public async Task<IActionResult> Register(string fullName, string email, string username, string password, string employeeType)
         {
-
             // Check if the logged-in user is an admin
             int? currentRoleId = HttpContext.Session.GetInt32("RoleId");
             if (currentRoleId == null || currentRoleId != 1)
             {
-                // Redirect non-admin users to the home page or another appropriate page
                 return RedirectToAction("Index", "Home");
             }
 
@@ -94,6 +123,7 @@ namespace iCareWebApplication.Controllers
                 _ => 0 // Default to 0 if no match
             };
 
+            // Validate EmployeeType
             if (roleId == 0)
             {
                 ModelState.AddModelError("", "Invalid Employee Type.");
@@ -120,6 +150,4 @@ namespace iCareWebApplication.Controllers
             return RedirectToAction("Index", "Home");
         }
     }
-}   
-
-
+}
