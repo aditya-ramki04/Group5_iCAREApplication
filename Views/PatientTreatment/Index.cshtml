@@ -1,4 +1,5 @@
-﻿@model IEnumerable<iCareWebApplication.Models.PatientTreatment>
+﻿
+@model IEnumerable<iCareWebApplication.Models.PatientTreatment>
 
 @{
     ViewData["Title"] = "Patient Treatments";
@@ -28,9 +29,7 @@
     <table class="table">
         <thead>
             <tr>
-                <th>
-                    <input type="checkbox" id="selectAll" />
-                </th>
+                <th></th>
                 <th>Treatment ID</th>
                 <th>Description</th>
                 <th>Treatment Date</th>
@@ -50,6 +49,7 @@
                     <td>@treatment.TreatmentDate.ToString("MM/dd/yyyy")</td>
                     <td>@treatment.WorkerId</td>
                     <td>
+                        <a asp-action="Edit" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-warning">Edit</a>
                         <a asp-action="DownloadPdf" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-info">Download PDF</a>
                     </td>
                 </tr>
