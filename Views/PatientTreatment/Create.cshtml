@@ -19,6 +19,22 @@
         <input asp-for="TreatmentDate" class="form-control" />
     </div>
 
+    <div class="form-group">
+        <label for="drugSelect">Select a drug:</label>
+        <select id="drugSelect" name="DrugId" class="form-control">
+            <option value="" selected disabled>Select a drug...</option>
+            @foreach (var drug in (IEnumerable<iCareWebApplication.Models.Drug>)ViewBag.Drugs)
+            {
+                <option value="@drug.DrugId">@drug.DrugName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label for="uploadingImage">Upload Images:</label>
+        <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple />
+    </div>
+
     <button type="submit" class="btn btn-primary">Save Treatment</button>
     <a asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary">Back to Treatments</a>
 </form>

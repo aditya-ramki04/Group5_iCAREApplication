@@ -18,6 +18,8 @@ namespace iCareWebApplication.Controllers
         // GET: /PatientTreatment/Index/{patientId} - View all treatments for a specific patient
         public async Task<IActionResult> Index(int patientId)
         {
+            var drugs = await _context.Drugs.ToListAsync();
+            ViewBag.Drugs = drugs;
             // Retrieve all treatments for the specified patient
             var treatments = await _context.PatientTreatment
                 .Where(t => t.PatientId == patientId)
@@ -28,8 +30,12 @@ namespace iCareWebApplication.Controllers
         }
 
         // GET: /PatientTreatment/Create/{patientId} - Display the form to create a new treatment for a specific patient
-        public IActionResult Create(int patientId)
+        public async Task<IActionResult> Create(int patientId)
         {
+            var drugs = await _context.Drugs.ToListAsync();
+
+            // Set ViewBag.Drugs to pass the list of drugs to the view
+            ViewBag.Drugs = drugs;
             var treatment = new PatientTreatment
             {
                 PatientId = patientId,
@@ -51,7 +57,7 @@ namespace iCareWebApplication.Controllers
                 {
                     return RedirectToAction("Login", "Account");
                 }
-
+                ViewBag.Drugs = await _context.Drugs.ToListAsync();
                 treatment.WorkerId = workerId.Value; // Set the worker ID
                 _context.PatientTreatment.Add(treatment); // Add the new treatment record
                 await _context.SaveChangesAsync();
