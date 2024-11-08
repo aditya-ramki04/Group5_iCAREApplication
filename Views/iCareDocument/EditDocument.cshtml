@@ -1,29 +1,43 @@
-﻿@model iCareWebApplication.Models.PatientTreatment
+﻿@model iCareWebApplication.Models.iCareDocument
 
-@{
-    ViewData["Title"] = "Edit Treatment";
-}
+<h2>Edit Document</h2>
 
-<h2>Edit Treatment</h2>
-
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-    <input type="hidden" asp-for="PatientTreatmentId" />
-    <input type="hidden" asp-for="PatientId" />
-    <input type="hidden" asp-for="WorkerId" />
-
+<form asp-action="EditDocument" method="post" enctype="multipart/form-data">
+    <input type="hidden" asp-for="iCareDocumentId" />
     <div class="form-group">
-        <label asp-for="Description" class="control-label"></label>
+        <label for="PatientId">Select Patient</label>
+        <select asp-for="PatientId" asp-items="ViewBag.Patients" class="form-control" required>
+            <option value="">-- Select Patient --</option>
+        </select>
+    </div>
+    <div class="form-group">
+        <label for="FilePath">File Path</label>
+        <input asp-for="FilePath" type="text" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="FileType">File Type</label>
+        <input asp-for="FileType" type="text" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="CreatedBy">Created By</label>
+        <input asp-for="CreatedBy" type="number" class="form-control" required readonly />
+    </div>
+    <div class="form-group">
+        <label for="CreationDate">Creation Date</label>
+        <input asp-for="CreationDate" type="datetime-local" class="form-control" required readonly />
+    </div>
+    <div class="form-group">
+        <label for="LastModified">Last Modified Date</label>
+        <input asp-for="LastModified" type="datetime-local" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="ModifiedBy">Modified By</label>
+        <input asp-for="ModifiedBy" type="number" class="form-control" required />
+    </div>
+    <div class="form-group">
+        <label for="Description">Description</label>
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
-        <span asp-validation-for="Description" class="text-danger"></span>
     </div>
-
-    <div class="form-group">
-        <label asp-for="TreatmentDate" class="control-label"></label>
-        <input asp-for="TreatmentDate" class="form-control" type="datetime-local" required />
-        <span asp-validation-for="TreatmentDate" class="text-danger"></span>
-    </div>
-
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
         <select id="drugSelect" name="DrugId" class="form-control">
@@ -34,7 +48,6 @@
             }
         </select>
     </div>
-
     <div class="form-group">
         <label>Uploaded Images:</label>
         <div>
@@ -44,25 +57,13 @@
 
             @if (imagePaths != null && imagePaths.Any())
             {
-                <table class="table table-bordered">
-                    <thead>
-                        <tr>
-                            <th>Image Name</th>
-                            <th>Remove</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var imagePath in imagePaths)
-                        {
-                            <tr>
-                                <td>@imagePath</td>
-                                <td>
-                                    <input type="checkbox" name="removeImages" value="@imagePath" />
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
+                foreach (var imagePath in imagePaths)
+                {
+                    <div>
+                        <span>@imagePath</span>
+                        <input type="checkbox" name="removeImages" value="@imagePath" /> Remove
+                    </div>
+                }
             }
             else
             {
@@ -70,18 +71,9 @@
             }
         </div>
     </div>
-
     <div class="form-group">
-        <label for="uploadingImage">Upload New Images:</label>
+        <label for="uploadingImage">Upload Images:</label>
         <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple />
     </div>
-
-    <button type="submit" class="btn btn-primary">Update Treatment</button>
-    <a asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary">Back to List</a>
+    <button type="submit" class="btn btn-primary">Update Document</button>
 </form>
-
-@section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
-    }
-}

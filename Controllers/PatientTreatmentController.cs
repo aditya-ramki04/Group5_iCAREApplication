@@ -100,15 +100,27 @@ namespace iCareWebApplication.Controllers
                 return NotFound();
             }
 
+            // Fetch the drug name using the DrugId from the treatment
+            var drug = await _context.Drugs.FirstOrDefaultAsync(d => d.DrugId == treatment.DrugId);
+            string drugName = drug?.DrugName ?? "N/A"; // Use "N/A" if the drug is not found
+            string drugDescription = drug?.Description ?? "N/A"; // Use "N/A" if the drug is not found
+
+
             using (MemoryStream ms = new MemoryStream())
             {
                 Document document = new Document(PageSize.A4, 25, 25, 30, 30);
                 PdfWriter writer = PdfWriter.GetInstance(document, ms);
                 document.Open();
 
+                // Add treatment information
                 document.Add(new Paragraph($"Treatment Date: {treatment.TreatmentDate}"));
                 document.Add(new Paragraph($"Description: {treatment.Description}"));
 
+                // Add drug information
+                document.Add(new Paragraph($"Drug Name: {drugName}"));
+                document.Add(new Paragraph($"Drug Description: {drugDescription}"));
+
+                // Add images associated with the treatment
                 var imageDirectory = Path.Combine(_hostingEnvironment.WebRootPath, "images", "treatments", id.ToString());
                 if (Directory.Exists(imageDirectory))
                 {
@@ -130,6 +142,7 @@ namespace iCareWebApplication.Controllers
                 return File(ms.ToArray(), "application/pdf", $"Treatment_{id}.pdf");
             }
         }
+
 
         [HttpPost]
         [ValidateAntiForgeryToken]
