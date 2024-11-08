@@ -1,55 +1,83 @@
-﻿
-
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
+    <!-- Specifies the character encoding for the document (UTF-8) -->
     <meta charset="utf-8" />
+
+    <!-- Ensures the page is responsive on all devices (scales to fit the device width) -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- Title of the page displayed in the browser tab -->
     <title>@ViewData["Title"] - iCareWebApplication</title>
+
+    <!-- Link to Bootstrap CSS for responsive design and styles -->
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+
+    <!-- Link to the custom site CSS for additional styles (site.css) -->
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+
+    <!-- Link to another custom CSS specific to the iCareWebApplication, for styling the app -->
     <link rel="stylesheet" href="~/iCareWebApplication.styles.css" asp-append-version="true" />
 </head>
 <body>
+    <!-- Header section containing the navigation bar -->
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
+                <!-- Link to the Home controller and Index action (Home page) -->
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">iCARE</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
+
+                <!-- Button to toggle the navbar on smaller screens (mobile) -->
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
+                        aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
+
+                <!-- Navbar links for users who are authenticated -->
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
                     <ul class="navbar-nav flex-grow-1">
+                        <!-- Show patient-related navigation options if the user has a valid RoleId in session -->
                         @if (Context.Session.GetInt32("RoleId") != null)
                         {
                             <li class="nav-item">
+                                <!-- Link to Patient records -->
                                 <a class="nav-link" asp-area="" asp-controller="Patient" asp-action="Index">Patient Records</a>
                             </li>
                             <li class="nav-item">
+                                <!-- Link to Assignable Patients page -->
                                 <a class="nav-link" asp-controller="Patient" asp-action="AssignablePatients">Assign Patients</a>
                             </li>
                             <li class="nav-item">
+                                <!-- Link to Drug management page -->
                                 <a class="nav-link" asp-area="" asp-controller="Drug" asp-action="Index">Drugs</a>
                             </li>
                             <li class="nav-item">
+                                <!-- Link to the user's Board page -->
                                 <a class="nav-link" asp-controller="Board" asp-action="MyBoard">My Board</a>
                             </li>
                             <li class="nav-item">
+                                <!-- Link to the Documents page -->
                                 <a class="nav-link" asp-controller="iCareDocument" asp-action="Index">Documents</a>
                             </li>
                         }
+
+                        <!-- Show User management link only if the RoleId is 1 (Admin role) -->
                         @if (Context.Session.GetInt32("RoleId") == 1)
                         {
                             <li class="nav-item">
+                                <!-- Link to User management page -->
                                 <a class="nav-link" asp-controller="User" asp-action="Index">Users</a>
                             </li>
                         }
                     </ul>
+
+                    <!-- Navbar links for user authentication (Login/Logout) -->
                     <ul class="navbar-nav">
+                        <!-- If the user is authenticated, show logout button -->
                         @if (User.Identity.IsAuthenticated)
                         {
                             <li class="nav-item">
+                                <!-- Form to log out the user -->
                                 <form method="post" asp-area="" asp-controller="Account" asp-action="Logout">
                                     <button type="submit" class="nav-link btn btn-link" style="border: none; cursor: pointer;">Logout</button>
                                 </form>
@@ -57,6 +85,7 @@
                         }
                         else
                         {
+                            <!-- If user is not logged in, display their username from the session (if available) -->
                             @if (Context.Session.GetString("Username") != null)
                             {
                                 <li class="nav-item">
@@ -64,7 +93,7 @@
                                 </li>
                             }
 
-
+                            <!-- Show sign-in link for unauthenticated users -->
                             <li class="nav-item">
                                 <a class="nav-link" asp-area="" asp-controller="Account" asp-action="Login">Sign In</a>
                             </li>
@@ -74,20 +103,31 @@
             </div>
         </nav>
     </header>
+
+    <!-- Main content area where specific page content will be rendered -->
     <div class="container">
         <main role="main" class="pb-3">
-            @RenderBody()
+            @RenderBody()  <!-- This is where the page content is dynamically rendered -->
         </main>
     </div>
 
+    <!-- Footer section with copyright information -->
     <footer class="border-top footer text-muted">
         <div class="container">
             &copy; 2024 - Group5_iCARE <a></a>
         </div>
     </footer>
+
+    <!-- Script to load jQuery library -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+
+    <!-- Script to load Bootstrap's bundled JS (for responsive functionality) -->
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Link to custom site script -->
     <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <!-- Allows additional scripts to be rendered on the page if any -->
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

@@ -1,33 +1,50 @@
 ﻿@model iCareWebApplication.Models.PatientTreatment
 
 @{
+    // Sets the title of the page dynamically for the "Edit Treatment" page
     ViewData["Title"] = "Edit Treatment";
 }
 
+<!-- Heading for the Edit Treatment page -->
 <h2>Edit Treatment</h2>
 
+<!-- Form for submitting the updated treatment information -->
 <form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <!-- Displays validation errors for the model -->
     <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+    <!-- Hidden input fields to store PatientTreatmentId, PatientId, and WorkerId -->
     <input type="hidden" asp-for="PatientTreatmentId" />
     <input type="hidden" asp-for="PatientId" />
     <input type="hidden" asp-for="WorkerId" />
 
+    <!-- Form group for entering/editing the description of the treatment -->
     <div class="form-group">
+        <!-- Label for the Description field -->
         <label asp-for="Description" class="control-label"></label>
+        <!-- Textarea for the Description field with validation -->
         <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+        <!-- Validation error message for Description -->
         <span asp-validation-for="Description" class="text-danger"></span>
     </div>
 
+    <!-- Form group for selecting the treatment date -->
     <div class="form-group">
+        <!-- Label for the TreatmentDate field -->
         <label asp-for="TreatmentDate" class="control-label"></label>
+        <!-- Input for selecting the treatment date with a datetime-local input type -->
         <input asp-for="TreatmentDate" class="form-control" type="datetime-local" required />
+        <!-- Validation error message for TreatmentDate -->
         <span asp-validation-for="TreatmentDate" class="text-danger"></span>
     </div>
 
+    <!-- Form group for selecting a drug -->
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
         <select id="drugSelect" name="DrugId" class="form-control">
+            <!-- Default option for selecting a drug -->
             <option value="" selected disabled>Select a drug...</option>
+            <!-- Loop through each drug passed in ViewBag.Drugs and display them as options -->
             @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
             {
                 <option value="@drug.DrugId">@drug.DrugName</option>
@@ -35,41 +52,54 @@
         </select>
     </div>
 
+    <!-- Form group for displaying and removing uploaded images -->
     <div class="form-group">
         <label>Uploaded Images:</label>
         <div>
             @{
+                // Retrieve the list of image paths from ViewBag
                 var imagePaths = ViewBag.ImagePaths as List<string>;
             }
 
+            <!-- Check if there are uploaded images and display them -->
             @if (imagePaths != null && imagePaths.Any())
             {
+                // Loop through each image path and display it with a checkbox to remove
                 foreach (var imagePath in imagePaths)
                 {
                     <div>
                         <span>@imagePath</span>
+                        <!-- Checkbox to remove the selected image -->
                         <input type="checkbox" name="removeImages" value="@imagePath" /> Remove
                     </div>
                 }
             }
             else
             {
+                <!-- If no images are uploaded, show a message -->
                 <p>No images uploaded.</p>
             }
         </div>
     </div>
 
+    <!-- Form group for uploading new images -->
     <div class="form-group">
         <label for="uploadingImage">Upload New Images:</label>
+        <!-- File input for selecting and uploading images, allowing multiple files -->
         <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple />
     </div>
 
+    <!-- Button to submit the form and update the treatment -->
     <button type="submit" class="btn btn-primary">Update Treatment</button>
+
+    <!-- Link to navigate back to the list of treatments for the current patient -->
     <a asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary">Back to List</a>
 </form>
 
+<!-- Section for including validation scripts -->
 @section Scripts {
     @{
+        // Render the partial view that includes client-side validation scripts
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }

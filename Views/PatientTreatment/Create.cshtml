@@ -1,28 +1,41 @@
 ﻿@model iCareWebApplication.Models.PatientTreatment
 
 @{
+    // Sets the title of the page dynamically for the "Add Patient Treatment" page
     ViewData["Title"] = "Add Patient Treatment";
 }
 
+<!-- Heading for the Add Patient Treatment page -->
 <h2>Add Patient Treatment</h2>
 
+<!-- Form for submitting the new treatment information -->
 <form method="post" asp-action="Create" enctype="multipart/form-data">
+    <!-- Hidden input field to store PatientId, as it is required for the new treatment -->
     <input type="hidden" asp-for="PatientId" />
 
+    <!-- Form group for entering the description of the treatment -->
     <div class="form-group">
+        <!-- Label for the Description field -->
         <label asp-for="Description">Description</label>
+        <!-- Textarea for the Description field with required validation -->
         <textarea asp-for="Description" class="form-control" required></textarea>
     </div>
 
+    <!-- Form group for selecting the treatment date -->
     <div class="form-group">
+        <!-- Label for the TreatmentDate field -->
         <label asp-for="TreatmentDate">Treatment Date</label>
+        <!-- Input for selecting the treatment date, with type set to date -->
         <input asp-for="TreatmentDate" class="form-control" type="date" />
     </div>
 
+    <!-- Form group for selecting a drug -->
     <div class="form-group">
         <label for="drugSelect">Select a drug:</label>
         <select id="drugSelect" name="DrugId" class="form-control">
+            <!-- Default option for selecting a drug -->
             <option value="" selected disabled>Select a drug...</option>
+            <!-- Loop through each drug passed in ViewBag.Drugs and display them as options -->
             @foreach (var drug in (IEnumerable<iCareWebApplication.Models.Drug>)ViewBag.Drugs)
             {
                 <option value="@drug.DrugId">@drug.DrugName</option>
@@ -30,11 +43,16 @@
         </select>
     </div>
 
+    <!-- Form group for uploading images associated with the treatment -->
     <div class="form-group">
         <label for="imageFiles">Upload Images:</label>
+        <!-- File input for selecting and uploading multiple images -->
         <input type="file" id="imageFiles" name="imageFiles" accept="image/*" class="form-control" multiple />
     </div>
 
+    <!-- Button to submit the form and save the new treatment -->
     <button type="submit" class="btn btn-primary">Save Treatment</button>
+
+    <!-- Link to navigate back to the list of treatments for the current patient -->
     <a asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary">Back to Treatments</a>
 </form>

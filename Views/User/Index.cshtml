@@ -1,37 +1,51 @@
 ﻿@model IEnumerable<iCareWebApplication.Models.User>
 
 @{
+    // Sets the title for the web page, which will be displayed in the browser's tab.
     ViewData["Title"] = "Users";
 }
 
+<!-- Header for the Users page. -->
 <h1>Users</h1>
 
-    <a asp-action="Register" asp-controller="Account" class="btn btn-secondary">Register</a>
+<!-- Link to the 'Register' action in the 'Account' controller,
+     which allows users to register a new user. It uses the 'btn btn-secondary' CSS class for styling. -->
+<a asp-action="Register" asp-controller="Account" class="btn btn-secondary">Register</a>
 
+<!-- Form to handle the deletion of selected users. -->
 <form method="post" asp-action="DeleteSelected">
+    <!-- Table for displaying a list of users. Each user is shown with their details. -->
     <table class="table">
         <thead>
             <tr>
-                <th></th>
-                <th>Name</th>
-                <th>Email</th>
-                <th>Employee Type</th>
-                <th>Account Status</th>
+                <!-- Table headers to describe the data columns -->
+                <th></th> <!-- Checkbox column for selecting users to delete -->
+                <th>Name</th> <!-- Column displaying the user's full name -->
+                <th>Email</th> <!-- Column displaying the user's email -->
+                <th>Employee Type</th> <!-- Column displaying the user's role ID (used to categorize employee type) -->
+                <th>Account Status</th> <!-- Column displaying the user's account status (e.g., Active or Inactive) -->
             </tr>
         </thead>
         <tbody>
+            <!-- Loops through each user in the model (which is a collection of User objects) and displays their details in rows -->
             @foreach (var user in Model)
             {
                 <tr>
+                    <!-- Checkbox to select users for deletion. The value is the user ID, which will be submitted when the form is posted -->
                     <td><input type="checkbox" name="selectedUserIds" value="@user.UserId" /></td>
+                    <!-- Display the user's full name -->
                     <td>@user.FullName</td>
+                    <!-- Display the user's email address -->
                     <td>@user.Email</td>
+                    <!-- Display the user's role ID (employee type), this could be mapped to a role name if necessary -->
                     <td>@user.RoleID</td>
+                    <!-- Display the user's account status (e.g., Active, Inactive) -->
                     <td>@user.AccountStatus</td>
                 </tr>
             }
         </tbody>
     </table>
 
+    <!-- Submit button to delete the selected users. The button uses the 'btn btn-danger' CSS class for styling. -->
     <button type="submit" class="btn btn-danger">Delete Selected Users</button>
 </form>

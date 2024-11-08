@@ -1,23 +1,29 @@
 ﻿@model IEnumerable<iCareWebApplication.Models.Role>
 
 @{
+    // Sets the title of the page dynamically for the Role List page
     ViewData["Title"] = "Role List";
 }
 
+<!-- Heading for the Role List page -->
 <h2>Role List</h2>
 
+<!-- Table to display the list of roles -->
 <table class="table">
     <thead>
         <tr>
+            <!-- Column headers for Role ID, Role Name, and Permissions -->
             <th>Role ID</th>
             <th>Role Name</th>
             <th>Permissions</th>
         </tr>
     </thead>
     <tbody>
+        <!-- Loop through each role in the model (a collection of Role objects) -->
         @foreach (var role in Model)
         {
             <tr>
+                <!-- Display Role ID, Role Name, and Permissions for each role -->
                 <td>@role.RoleID</td>
                 <td>@role.RoleName</td>
                 <td>@role.Permissions</td>
@@ -26,6 +32,7 @@
     </tbody>
 </table>
 
+<!-- Link to the "Create" action to add a new role, with a styled button -->
 <p>
     <a asp-action="Create" class="btn btn-primary">Add New Role</a>
 </p>
