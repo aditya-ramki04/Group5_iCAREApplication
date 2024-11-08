@@ -1,0 +1,75 @@
+﻿@model iCareWebApplication.Models.PatientTreatment
+
+@{
+    ViewData["Title"] = "Edit Treatment";
+}
+
+<h2>Edit Treatment</h2>
+
+<form asp-action="Edit" method="post" enctype="multipart/form-data">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <input type="hidden" asp-for="PatientTreatmentId" />
+    <input type="hidden" asp-for="PatientId" />
+    <input type="hidden" asp-for="WorkerId" />
+
+    <div class="form-group">
+        <label asp-for="Description" class="control-label"></label>
+        <textarea asp-for="Description" class="form-control" rows="3" required></textarea>
+        <span asp-validation-for="Description" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label asp-for="TreatmentDate" class="control-label"></label>
+        <input asp-for="TreatmentDate" class="form-control" type="datetime-local" required />
+        <span asp-validation-for="TreatmentDate" class="text-danger"></span>
+    </div>
+
+    <div class="form-group">
+        <label for="drugSelect">Select a drug:</label>
+        <select id="drugSelect" name="DrugId" class="form-control">
+            <option value="" selected disabled>Select a drug...</option>
+            @foreach (var drug in (IEnumerable<dynamic>)ViewBag.Drugs)
+            {
+                <option value="@drug.DrugId">@drug.DrugName</option>
+            }
+        </select>
+    </div>
+
+    <div class="form-group">
+        <label>Uploaded Images:</label>
+        <div>
+            @{
+                var imagePaths = ViewBag.ImagePaths as List<string>;
+            }
+
+            @if (imagePaths != null && imagePaths.Any())
+            {
+                foreach (var imagePath in imagePaths)
+                {
+                    <div>
+                        <span>@imagePath</span>
+                        <input type="checkbox" name="removeImages" value="@imagePath" /> Remove
+                    </div>
+                }
+            }
+            else
+            {
+                <p>No images uploaded.</p>
+            }
+        </div>
+    </div>
+
+    <div class="form-group">
+        <label for="uploadingImage">Upload New Images:</label>
+        <input type="file" id="uploadImages" name="imageFiles" accept="image/*" class="form-control" multiple />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Update Treatment</button>
+    <a asp-action="Index" asp-route-patientId="@Model.PatientId" class="btn btn-secondary">Back to List</a>
+</form>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}
