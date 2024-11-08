@@ -1,4 +1,6 @@
 iCareWebApplication Setup Guide
+
+
 Prerequisites
 ----------------
 .NET Core SDK (version compatible with the project, e.g., .NET 6.0 or .NET 5.0)
