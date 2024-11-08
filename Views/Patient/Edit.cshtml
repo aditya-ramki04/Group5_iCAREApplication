@@ -1,77 +1,102 @@
 ﻿@model iCareWebApplication.Models.Patient
 
 @{
+    // Setting the title of the page
     ViewData["Title"] = "Edit Patient";
 }
 
 <h2>Edit Patient</h2>
 
+<!-- Validation summary section that shows all errors, if any, when the form is submitted -->
 <form asp-action="Create" method="post">
     <div asp-validation-summary="All" class="text-danger"></div>
 </form>
 
+<!-- Main form to edit the patient information -->
 <form asp-action="Edit" method="post">
+    <!-- Hidden field to bind the PatientId so it's not visible in the form but gets submitted -->
     <input type="hidden" asp-for="PatientId" />
 
+    <!-- Input for Name of the patient -->
     <div class="form-group">
         <label asp-for="Name" class="control-label"></label>
         <input asp-for="Name" class="form-control" />
+        <!-- Displaying validation error for Name if any -->
         <span asp-validation-for="Name" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Date of Birth of the patient -->
     <div class="form-group">
         <label asp-for="DateOfBirth" class="control-label"></label>
         <input asp-for="DateOfBirth" type="date" class="form-control" />
+        <!-- Displaying validation error for DateOfBirth if any -->
         <span asp-validation-for="DateOfBirth" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Address of the patient -->
     <div class="form-group">
         <label asp-for="Address" class="control-label"></label>
         <input asp-for="Address" class="form-control" />
+        <!-- Displaying validation error for Address if any -->
         <span asp-validation-for="Address" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Phone Number of the patient -->
     <div class="form-group">
         <label asp-for="PhoneNumber" class="control-label"></label>
         <input asp-for="PhoneNumber" class="form-control" />
+        <!-- Displaying validation error for PhoneNumber if any -->
         <span asp-validation-for="PhoneNumber" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Height of the patient -->
     <div class="form-group">
         <label asp-for="Height" class="control-label"></label>
         <input asp-for="Height" type="number" class="form-control" />
+        <!-- Displaying validation error for Height if any -->
         <span asp-validation-for="Height" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Weight of the patient -->
     <div class="form-group">
         <label asp-for="Weight" class="control-label"></label>
         <input asp-for="Weight" type="number" class="form-control" />
+        <!-- Displaying validation error for Weight if any -->
         <span asp-validation-for="Weight" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Blood Group of the patient -->
     <div class="form-group">
         <label asp-for="BloodGroup" class="control-label"></label>
         <input asp-for="BloodGroup" class="form-control" />
+        <!-- Displaying validation error for BloodGroup if any -->
         <span asp-validation-for="BloodGroup" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Bed ID of the patient -->
     <div class="form-group">
         <label asp-for="BedId" class="control-label"></label>
         <input asp-for="BedId" class="form-control" />
+        <!-- Displaying validation error for BedId if any -->
         <span asp-validation-for="BedId" class="text-danger"></span>
     </div>
 
+    <!-- Input for the Treatment Area of the patient -->
     <div class="form-group">
         <label asp-for="TreatmentArea" class="control-label"></label>
         <input asp-for="TreatmentArea" class="form-control" />
+        <!-- Displaying validation error for TreatmentArea if any -->
         <span asp-validation-for="TreatmentArea" class="text-danger"></span>
     </div>
 
+    <!-- Input for the GeoCode ID of the patient -->
     <div class="form-group">
         <label asp-for="GeoCodeId" class="control-label"></label>
         <input asp-for="GeoCodeId" type="number" class="form-control" />
+        <!-- Displaying validation error for GeoCodeId if any -->
         <span asp-validation-for="GeoCodeId" class="text-danger"></span>
     </div>
 
+    <!-- Submit button for saving the changes -->
     <button type="submit" class="btn btn-primary">Save Changes</button>
 </form>

@@ -1,12 +1,14 @@
-﻿
-@model IEnumerable<iCareWebApplication.Models.PatientTreatment>
+﻿@model IEnumerable<iCareWebApplication.Models.PatientTreatment>
 
 @{
+    // Sets the title of the page dynamically for the Patient Treatments page
     ViewData["Title"] = "Patient Treatments";
 }
 
+<!-- Heading for the Patient Treatments page -->
 <h2>Patient Treatments</h2>
 
+<!-- Displays a success message if TempData contains a message -->
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success">
@@ -14,21 +16,28 @@
     </div>
 }
 
+<!-- Container for the Add New Treatment button and Delete Selected button -->
 <div class="d-flex justify-content-between mb-3">
+    <!-- Add New Treatment button links to the Create action and passes PatientId as a route value -->
     <a asp-action="Create" asp-route-patientId="@ViewBag.PatientId" class="btn btn-primary">Add New Treatment</a>
 
+    <!-- Form for deleting selected treatments -->
     <form asp-action="DeleteSelected" method="post" id="deleteForm" class="d-inline">
+        <!-- Hidden field for PatientId to be passed to the controller -->
         <input type="hidden" name="patientId" value="@ViewBag.PatientId" />
+        <!-- Delete Selected button, initially disabled until treatments are selected -->
         <button type="submit" class="btn btn-danger" id="deleteSelectedBtn" disabled onclick="return confirm('Are you sure you want to delete the selected treatments?');">
             Delete Selected
         </button>
     </form>
 </div>
 
+<!-- Form for displaying the list of treatments -->
 <form id="treatmentsForm">
     <table class="table">
         <thead>
             <tr>
+                <!-- Checkbox header for selecting all treatments -->
                 <th></th>
                 <th>Treatment ID</th>
                 <th>Description</th>
@@ -38,9 +47,11 @@
             </tr>
         </thead>
         <tbody>
+            <!-- Loop through each treatment in the model and display its details -->
             @foreach (var treatment in Model)
             {
                 <tr>
+                    <!-- Checkbox for selecting a treatment -->
                     <td>
                         <input type="checkbox" name="selectedTreatments" value="@treatment.PatientTreatmentId" class="treatment-checkbox" form="deleteForm" />
                     </td>
@@ -49,7 +60,9 @@
                     <td>@treatment.TreatmentDate.ToString("MM/dd/yyyy")</td>
                     <td>@treatment.WorkerId</td>
                     <td>
+                        <!-- Edit button to edit the treatment -->
                         <a asp-action="Edit" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-warning">Edit</a>
+                        <!-- Download PDF button to download treatment-related PDF -->
                         <a asp-action="DownloadPdf" asp-route-id="@treatment.PatientTreatmentId" class="btn btn-sm btn-info">Download PDF</a>
                     </td>
                 </tr>
@@ -58,23 +71,28 @@
     </table>
 </form>
 
+<!-- Display a message if no treatments are found for the patient -->
 @if (!Model.Any())
 {
     <p>No treatments found for this patient.</p>
 }
 
+<!-- Section for adding custom JavaScript -->
 @section Scripts {
     <script>
         $(document).ready(function () {
+            // When the "select all" checkbox is clicked, check/uncheck all individual checkboxes
             $('#selectAll').click(function () {
                 $('.treatment-checkbox').prop('checked', this.checked);
                 updateDeleteButtonState();
             });
 
+            // When an individual treatment checkbox is clicked, update the delete button state
             $('.treatment-checkbox').click(function () {
                 updateDeleteButtonState();
             });
 
+            // Function to update the delete button's enabled/disabled state based on selected checkboxes
             function updateDeleteButtonState() {
                 var checkedBoxes = $('.treatment-checkbox:checked').length;
                 $('#deleteSelectedBtn').prop('disabled', checkedBoxes === 0);

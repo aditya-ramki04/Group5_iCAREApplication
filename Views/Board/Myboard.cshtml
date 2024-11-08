@@ -1,32 +1,41 @@
 ﻿@model IEnumerable<iCareWebApplication.Models.Patient>
 
 @{
+    // Setting the title of the page
     ViewData["Title"] = "My Board";
 }
 
 <h2>My Board</h2>
 
+<!-- Table to display a list of patients -->
 <table class="table">
     <thead>
         <tr>
+            <!-- Table headers -->
             <th>Patient ID</th>
             <th>Name</th>
             <th>Date of Birth</th>
             <th>GeoCodeId</th>
             <th>Treatment Record</th>
-            <!-- Add more columns as needed -->
+            <!-- You can add more columns here as needed -->
         </tr>
     </thead>
     <tbody>
+        <!-- Looping through the list of patients (Model) and displaying each patient's data -->
         @foreach (var patient in Model)
         {
             <tr>
-                <td>@patient.PatientId</td>
-                <td>@patient.Name</td>
-                <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>
-                <td>@patient.GeoCodeId</td>
+                <!-- Displaying each patient's information in a new row -->
+                <td>@patient.PatientId</td>  <!-- Patient's unique ID -->
+                <td>@patient.Name</td>  <!-- Patient's name -->
+                <td>@patient.DateOfBirth.ToString("MM/dd/yyyy")</td>  <!-- Patient's date of birth formatted as MM/dd/yyyy -->
+                <td>@patient.GeoCodeId</td>  <!-- Patient's geographical code ID -->
                 <td>
-                      <a asp-controller="PatientTreatment" asp-action="Index" asp-route-patientId="@patient.PatientId" class="btn btn-info">View Treatments</a>
+                    <!-- Link to view the patient's treatment record -->
+                    <a asp-controller="PatientTreatment"
+                       asp-action="Index"
+                       asp-route-patientId="@patient.PatientId"
+                       class="btn btn-info">View Treatments</a>
                 </td>
             </tr>
         }
